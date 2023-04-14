@@ -24,6 +24,13 @@ local M = {
         "hrsh7th/cmp-nvim-lsp",
         -- Lsp
         { "j-hui/fidget.nvim", config = true },
+        {
+            "jose-elias-alvarez/null-ls.nvim",
+            event = "BufReadPre",
+            dependencies = {
+                "jayp0521/mason-null-ls.nvim",
+            },
+        }
     },
 }
 
@@ -188,6 +195,21 @@ local function on_attach(client, bufnr)
 end
 
 M.config = function()
+    local null_ls = require("null-ls")
+
+    require("mason-null-ls").setup({
+        ensure_installed = { "stylua", "prettier", "yamlfmt" },
+        automatic_setup = true,
+    })
+
+    null_ls.setup({
+        sources = {
+            null_ls.builtins.code_actions.gitsigns,
+            null_ls.builtins.formatting.yamlfmt,
+        },
+        on_attach = on_attach
+    })
+
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
     local config = {
