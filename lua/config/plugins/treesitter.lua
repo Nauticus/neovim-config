@@ -60,6 +60,9 @@ return {
             ignore_install = { "haskell" },
             highlight = {
                 enable = true,
+                disable = function(lang, bufnr)
+                    return vim.api.nvim_buf_line_count(bufnr) > 2000
+                end
             },
             refactor = { highlight_definitions = { enable = true } },
             -- tree_docs = { enable = true },

@@ -12,6 +12,7 @@ return {
         {
             "tzachar/cmp-tabnine",
             build = "./install.sh",
+            enabled = false,
             config = function()
                 local tabnine = require("cmp_tabnine.config")
 

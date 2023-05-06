@@ -4,6 +4,7 @@ return {
     { "junegunn/vim-easy-align", cmd = "EasyAlign" },
     {
         "ggandor/leap.nvim",
+        disable = true,
         keys = {
             { "s", mode = "n" },
             { "S", mode = "n" },
