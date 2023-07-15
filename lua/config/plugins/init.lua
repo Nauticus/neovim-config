@@ -21,6 +21,11 @@ return {
         opts = {
             flavour = "mocha", -- latte, frappe, macchiato, mocha
             transparent_background = true,
+            styles = {
+                variables = {},
+                conditionals = {},
+                types = {}
+            },
             custom_highlights = function(colors)
                 return {
                     OilDir = { fg = colors.blue },
@@ -28,7 +33,10 @@ return {
                     MatchParen = { bg = colors.surface0, bold = true },
                     MatchWord = { bg = colors.surface0, underdashed = true, bold = true },
                     CmpCompletionWindow = { fg = colors.surface2 },
+                    LspInlayHint = { bg = colors.mantle, fg = colors.surface2 },
+                    FoldColumn = { fg = colors.surface0 },
                     CmpDocumentationWindow = { fg = colors.rosewater },
+                    CursorLine = { bg = "NONE" }
                 }
             end,
             integrations = {

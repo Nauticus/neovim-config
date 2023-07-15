@@ -1,10 +1,26 @@
 return {
-    { "kylechui/nvim-surround", event = "BufReadPre", config = true },
+    { "kylechui/nvim-surround",  event = "BufReadPre", config = true },
     { "tpope/vim-unimpaired" },
     { "junegunn/vim-easy-align", cmd = "EasyAlign" },
     {
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        ---@type Flash.Config
+        opts = {},
+        keys = {
+            {
+                "r",
+                mode = "o",
+                function()
+                    require("flash").remote()
+                end,
+                desc = "Remote Flash",
+            },
+        },
+    },
+    {
         "ggandor/leap.nvim",
-        disable = true,
+        enabled = false,
         keys = {
             { "s", mode = "n" },
             { "S", mode = "n" },

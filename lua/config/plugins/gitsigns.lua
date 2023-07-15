@@ -6,13 +6,6 @@ local M = {
 
 function M.config()
     require("gitsigns").setup({
-        signs = {
-            add = { text = "│" },
-            change = { text = "│" },
-            delete = { text = "_" },
-            topdelete = { text = "‾" },
-            changedelete = { text = "~" },
-        },
         sign_priority = 5,
         current_line_blame = false,
         current_line_blame_opts = {
@@ -27,10 +20,10 @@ function M.config()
         on_attach = function(bufnr)
             local gs = package.loaded.gitsigns
 
-            local function map(mode, l, r, opts)
+            local function map(mode, lhs, rhs, opts)
                 opts = opts or {}
                 opts.buffer = bufnr
-                vim.keymap.set(mode, l, r, opts)
+                vim.keymap.set(mode, lhs, rhs, opts)
             end
 
             -- Navigation

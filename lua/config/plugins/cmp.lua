@@ -6,6 +6,23 @@ return {
         "hrsh7th/cmp-buffer",
         "andersevenrud/cmp-tmux",
         { "saadparwaiz1/cmp_luasnip", dependencies = { "L3MON4D3/LuaSnip" } },
+        {
+            "zbirenbaum/copilot-cmp",
+            dependencies = {
+                {
+                    "zbirenbaum/copilot.lua",
+                    config = function()
+                        require("copilot").setup({
+                            suggestion = { enabled = false },
+                            panel = { enabled = false },
+                        })
+                    end
+                }
+            },
+            config = function()
+                require("copilot_cmp").setup()
+            end
+        },
         "hrsh7th/cmp-path",
         "hrsh7th/cmp-nvim-lsp",
         "ray-x/cmp-treesitter",
@@ -76,8 +93,10 @@ return {
             },
             sortings = {
                 comparators = {
-                    cmp.config.compare.offset,
+                    require("copilot_cmp.comparators").prioritize,
                     cmp.config.compare.exact,
+                    cmp.config.compare.offset,
+                    cmp.config.compare.recently_used,
                     cmp.config.compare.score,
                     require("cmp-under-comparator").under,
                     cmp.config.compare.kind,
@@ -111,13 +130,13 @@ return {
                 }),
             },
             sources = cmp.config.sources({
+                { name = "copilot",                group_index = 2 },
                 { name = "nvim_lsp" },
                 { name = "nvim_lsp_signature_help" },
                 { name = "cmp_tabnine" },
-                { name = "luasnip", priority_weight = 50 },
+                { name = "luasnip",                priority_weight = 50 },
                 { name = "nvim_lua" },
                 { name = "path" },
-            }, {
                 {
                     name = "buffer",
                     option = {
@@ -168,7 +187,7 @@ return {
                 end, { "i", "s" }),
 
                 ["<CR>"] = cmp.mapping({
-                    i = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace }),
+                    i = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
                     c = cmp.mapping.confirm({ select = false }),
                 }),
 
@@ -200,14 +219,14 @@ return {
         cmp.setup.cmdline("/", {
             mapping = cmp.mapping.preset.cmdline(),
             sources = {
-                { name = "buffer" },
+                { name = "buffer", max_item_count = 2 },
             },
         })
 
         cmp.setup.cmdline("?", {
             mapping = cmp.mapping.preset.cmdline(),
             sources = {
-                { name = "buffer" },
+                { name = "buffer", max_item_count = 2 },
             },
         })
 

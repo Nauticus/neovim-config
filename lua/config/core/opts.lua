@@ -22,13 +22,13 @@ vim.opt.smartcase = true
 vim.opt.smarttab = true
 vim.opt.hlsearch = false
 vim.opt.signcolumn = "yes:2"
-vim.opt.numberwidth = 2
+vim.opt.numberwidth = 4
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.cursorline = true
 vim.opt.breakindent = false
 vim.opt.linebreak = false
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.cpo:append("n_")
 vim.opt.list = true
 -- vim.opt.listchars:append({
@@ -50,6 +50,10 @@ vim.opt.fillchars:append({
     horizup = "┻",
     horizdown = "┳",
     vert = "┃",
+    fold = " ",
+    foldsep = " ",
+    foldclose = "󰜄",
+    foldopen = "󰛲",
     vertleft = "┨",
     vertright = "┣",
     verthoriz = "╋",
@@ -59,5 +63,7 @@ vim.opt.inccommand = "split"
 vim.opt.splitkeep = "cursor"
 vim.opt.laststatus = 3
 vim.opt.cmdheight = 1
-vim.opt.foldenable = false
+vim.opt.foldenable = true
+vim.opt.foldcolumn = "1"
+vim.opt.foldlevelstart = 99
 -- vim.opt.statuscolumn = "%s %=%{&nu?(&rnu&&v:relnum?v:relnum:v:lnum):''} %#GutterSep#▏%*%T"

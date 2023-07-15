@@ -12,6 +12,8 @@ return {
     dependencies = {
         "nvim-treesitter/nvim-treesitter-textobjects",
         "nvim-treesitter/nvim-treesitter-refactor",
+        "HiPhish/nvim-ts-rainbow2",
+        "nvim-treesitter/nvim-treesitter-context",
         "nvim-treesitter/playground",
         "nvim-treesitter/completion-treesitter",
         "windwp/nvim-ts-autotag",
@@ -29,7 +31,6 @@ return {
     },
     config = function()
         local treesitter = require("nvim-treesitter")
-        local parsers = require("nvim-treesitter.parsers")
         local query = require("nvim-treesitter.query")
 
         local foldmethod_backups = {}
@@ -55,6 +56,8 @@ return {
             },
         })
 
+        -- require("treesitter-context").setup()
+
         require("nvim-treesitter.configs").setup({
             ensure_installed = "all",
             ignore_install = { "haskell" },
@@ -65,14 +68,16 @@ return {
                 end
             },
             refactor = { highlight_definitions = { enable = true } },
+            rainbow = {
+                enable = false,
+            },
             -- tree_docs = { enable = true },
             incremental_selection = {
                 enable = true,
                 keymaps = {
-                    init_selection = "gnn",
-                    node_incremental = "gn[",
-                    scope_incremental = "gn]",
-                    node_decremental = "gn)",
+                    init_selection = "<CR>",
+                    node_incremental = "<BS>",
+                    node_decremental = "<Del>",
                 },
             },
             textobjects = {
@@ -94,7 +99,7 @@ return {
             indent = { enable = true },
             playground = {
                 enable = true,
-                updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+                updatetime = 25,        -- Debounced time for highlighting nodes in the playground from source code
                 persist_queries = true, -- Whether the query persists across vim sessions
             },
         })
