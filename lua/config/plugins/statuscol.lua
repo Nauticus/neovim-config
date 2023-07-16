@@ -1,15 +1,50 @@
 return {
     "luukvbaal/statuscol.nvim",
-    enabled = false,
-    opts = {
-        separator = "│",
-        foldfunc = "builtin",
-        setopt = true,
-        order = "SFNs",
-    },
+    enabled = true,
     config = function(_, opts)
-        require("statuscol").setup(opts)
-        -- vim.o.statuscolumn = "%@v:lua.ScFa@%C%T%@v:lua.ScLa@%s%T@v:lua.ScNa@%=%{v:lua.ScLn()}%T"
+        local builtin = require('statuscol.builtin')
+
+        require("statuscol").setup({
+            setopts = true,
+            bt_ignore = { 'terminal' },
+            ft_ignore = { 'oil' },
+            segments = {
+                {
+                    sign = { name = { "Diagnostic" }, wrap = true },
+                    click = "v:lua.ScSa"
+                },
+                {
+                    text = { builtin.lnumfunc },
+                    sign = {
+                        auto = false,
+                        wrap = true
+                    },
+                    click = 'v:lua.ScLa',
+                },
+                {
+                    text = { ' ', builtin.foldfunc, ' ' },
+                    condition = { builtin.not_empty, true, builtin.not_empty },
+                    sign = {
+                        wrap = true,
+                    },
+                    click = 'v:lua.ScFa'
+                },
+                {
+                    sign = {
+                        name = { "GitSigns" },
+                        fillchar = "┃",
+                        maxwidth = 1,
+                        colwidth = 1,
+                        auto = false,
+                        wrap = true
+                    },
+                    click = "v:lua.ScSa"
+                },
+                { text = { " " } }
+            },
+            clickhandlers = {
+                FoldOther = false,
+            },
+        })
     end,
 }
-

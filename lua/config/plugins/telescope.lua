@@ -74,6 +74,20 @@ local M = {
                 require("telescope.builtin").command_history()
             end,
             desc = "Command History"
+        },
+        {
+            "<leader>scb",
+            function()
+                require("telescope.builtin").current_buffer_fuzzy_find()
+            end,
+            desc = "Current Buffer Fuzzy Find"
+        },
+        {
+            "<leader>sb",
+            function()
+                require("telescope.builtin").buffers()
+            end,
+            desc = "Buffers"
         }
     },
 }

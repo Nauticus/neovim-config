@@ -20,8 +20,8 @@ local M = {
         },
         "b0o/schemastore.nvim",
         "folke/neodev.nvim",
-        "jose-elias-alvarez/nvim-lsp-ts-utils",
         "hrsh7th/cmp-nvim-lsp",
+        "jose-elias-alvarez/typescript.nvim",
         -- Lsp
         { "j-hui/fidget.nvim", config = true },
         {
@@ -30,6 +30,11 @@ local M = {
             dependencies = {
                 "jayp0521/mason-null-ls.nvim",
             },
+        },
+        {
+            "folke/trouble.nvim",
+            dependencies = { "nvim-tree/nvim-web-devicons" },
+            opts = {}
         }
     },
 }
@@ -178,6 +183,9 @@ local mappings = function(client, bufnr)
         { desc = "Remove workspace folder" }
     )
     keymap.set("n", "<leader>lwl", list_workspaces, { desc = "List workspace folders" })
+    keymap.set("n", "<leader>lh", function()
+        vim.lsp.buf.inlay_hint(bufnr, nil)
+    end, { desc = "Toggle inlay hints" })
 end
 
 local function on_attach(client, bufnr)
@@ -196,6 +204,19 @@ end
 
 M.config = function()
     local null_ls = require("null-ls")
+    local group_name = "vimrc_mason_lspconfig"
+    vim.api.nvim_create_augroup(group_name, { clear = true })
+
+    vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+            local bufnr = args.buf
+            local client = vim.lsp.get_client_by_id(args.data.client_id)
+            if client.supports_method("textDocument/inlayHint") then
+                vim.lsp.buf.inlay_hint(bufnr, false)
+            end
+        end,
+        group = group_name,
+    })
 
     require("mason-null-ls").setup({
         ensure_installed = { "stylua", "prettier", "yamlfmt" },
@@ -203,9 +224,11 @@ M.config = function()
     })
 
     null_ls.setup({
+        debug = false,
         sources = {
             null_ls.builtins.code_actions.gitsigns,
             null_ls.builtins.formatting.yamlfmt,
+            null_ls.builtins.formatting.prettier,
         },
         on_attach = on_attach
     })
@@ -224,21 +247,6 @@ M.config = function()
                     },
                 },
             },
-        },
-        tsserver = {
-            init_options = require("nvim-lsp-ts-utils").init_options,
-            on_attach = function(client, bufnr)
-                local has_ts_utils, ts_utils = pcall(require, "nvim-lsp-ts-utils")
-                if not has_ts_utils then
-                    vim.notify("nvim-lsp-ts-utils is missing", vim.log.levels.WARN)
-                    return
-                end
-
-                ts_utils.setup({ auto_inlay_hints = false })
-                ts_utils.setup_client(client)
-
-                on_attach(client, bufnr)
-            end,
         },
         jsonls = {
             filetypes = { "json", "jsonc" },
@@ -269,6 +277,52 @@ M.config = function()
 
             require("lspconfig")[server_name].setup(opts)
         end,
+        ["tsserver"] = function()
+            require("typescript").setup({
+                server = {
+                    debug = false,
+                    on_attach = function(client, bufnr)
+                        client.server_capabilities.documentFormattingProvider = false
+                        client.server_capabilities.documentRangeFormattingProvider = false
+                        on_attach(client, bufnr);
+                    end,
+                    capabilities = cmp_nvim_lsp.default_capabilities(),
+                    settings = {
+                        typescript = {
+                            inlayHints = {
+                                includeInlayParameterNameHints = "all",
+                                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+                                includeInlayFunctionParameterTypeHints = true,
+                                includeInlayVariableTypeHints = false,
+                                includeInlayPropertyDeclarationTypeHints = true,
+                                includeInlayFunctionLikeReturnTypeHints = false,
+                                includeInlayEnumMemberValueHints = true,
+                            },
+                        },
+                        javascript = {
+                            inlayHints = {
+                                includeInlayParameterNameHints = "all",
+                                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+                                includeInlayFunctionParameterTypeHints = true,
+                                includeInlayVariableTypeHints = false,
+                                includeInlayPropertyDeclarationTypeHints = true,
+                                includeInlayFunctionLikeReturnTypeHints = false,
+                                includeInlayEnumMemberValueHints = true,
+                            },
+                        },
+                    },
+                    init_options = {
+                        hostInfo = "neovim",
+                        plugins = {
+                            {
+                                name = "@styled/typescript-styled-plugin",
+                                location = os.getenv("HOME") .. "/.nvm/versions/node/v16.16.0/lib"
+                            }
+                        }
+                    }
+                }
+            })
+        end,
         ["lua_ls"] = function()
             local neodev = require("neodev")
 
@@ -279,6 +333,9 @@ M.config = function()
                 capabilities = cmp_nvim_lsp.default_capabilities(),
                 settings = {
                     Lua = {
+                        hint = {
+                            enable = true
+                        },
                         completion = {
                             callSnippet = "Replace",
                         },
