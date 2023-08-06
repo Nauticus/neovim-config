@@ -1,5 +1,7 @@
 return {
     "folke/which-key.nvim",
+    version = "1.4.3",
+    enabled = true,
     opts = {
         plugins = {
             spelling = { enabled = true },
@@ -23,11 +25,17 @@ return {
         wk.register({ name = "+utilities" }, { prefix = "<leader>u" })
         wk.register({ name = "+harpoon" }, { prefix = "<leader>h" })
         wk.register({ name = "+persistance" }, { prefix = "<leader>p" })
+        wk.register({ name = "+LSP" }, { prefix = "<leader>l" })
         wk.register(
-            { name = "+gitsigns", h = { name = "+hunk" }, t = { name = "+toggle" } },
+            { name = "+gitsigns", h = { name = "+hunk" } },
             { prefix = "<leader>g" }
         )
         wk.register({ name = "+telescope" }, { prefix = "<leader>s", mode = "v" })
         wk.register({ name = "+telescope" }, { prefix = "<leader>s", mode = "n" })
+        wk.register({
+            ["\\"] = {
+                name = "+toggle", l = { name = "+LSP" }, g = { name = "+Git" }, o = { name = "+Options" }
+            }
+        })
     end,
 }

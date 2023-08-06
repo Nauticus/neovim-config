@@ -10,7 +10,7 @@ function M.config()
         current_line_blame = false,
         current_line_blame_opts = {
             virt_text = true,
-            virt_text_pos = "right_align", -- 'eol' | 'overlay' | 'right_align'
+            virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
             delay = 700,
             ignore_whitespace = true,
         },
@@ -57,8 +57,8 @@ function M.config()
             map("n", "<leader>gr", gs.reset_buffer, { desc = "Reset buffer" })
             map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, { desc = "Blame line" })
 
-            map("n", "<leader>gtb", gs.toggle_current_line_blame, { desc = "Toggle current line blame" })
-            map("n", "<leader>gtd", gs.toggle_deleted, { desc = "Toggle deleted" })
+            map("n", [[\gb]], gs.toggle_current_line_blame, { desc = "Toggle current line blame" })
+            map("n", [[\gd]], gs.toggle_deleted, { desc = "Toggle deleted" })
 
             -- Text object
             map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })

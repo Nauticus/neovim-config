@@ -12,7 +12,6 @@ return {
     dependencies = {
         "nvim-treesitter/nvim-treesitter-textobjects",
         "nvim-treesitter/nvim-treesitter-refactor",
-        "HiPhish/nvim-ts-rainbow2",
         "nvim-treesitter/nvim-treesitter-context",
         "nvim-treesitter/playground",
         "nvim-treesitter/completion-treesitter",
@@ -21,11 +20,11 @@ return {
             "andymass/vim-matchup",
             enabled = false,
             init = function()
-                vim.g.matchup_matchparen_deferred = 1
+                -- vim.g.matchup_matchparen_deferred = 1
                 vim.g.matchup_matchparen_hi_surround_always = 1
                 vim.g.matchup_matchparen_offscreen = {}
-                vim.g.matchup_matchparen_deferred_show_delay = 200
-                vim.g.matchup_matchparen_deferred_hide_delay = 1000
+                -- vim.g.matchup_matchparen_deferred_show_delay = 200
+                -- vim.g.matchup_matchparen_deferred_hide_delay = 1000
             end,
         },
     },
@@ -68,9 +67,6 @@ return {
                 end
             },
             refactor = { highlight_definitions = { enable = true } },
-            rainbow = {
-                enable = false,
-            },
             -- tree_docs = { enable = true },
             incremental_selection = {
                 enable = true,

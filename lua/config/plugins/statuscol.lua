@@ -7,7 +7,7 @@ return {
         require("statuscol").setup({
             setopts = true,
             bt_ignore = { 'terminal' },
-            ft_ignore = { 'oil' },
+            ft_ignore = { 'oil', 'NvimTree' },
             segments = {
                 {
                     sign = { name = { "Diagnostic" }, wrap = true },

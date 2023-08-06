@@ -21,7 +21,10 @@ local M = {
         "b0o/schemastore.nvim",
         "folke/neodev.nvim",
         "hrsh7th/cmp-nvim-lsp",
-        "jose-elias-alvarez/typescript.nvim",
+        {
+            "pmizio/typescript-tools.nvim",
+            dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+        },
         -- Lsp
         { "j-hui/fidget.nvim", config = true },
         {
@@ -48,11 +51,8 @@ vim.diagnostic.config({
 
 local mappings = function(client, bufnr)
     local keymap = vim.keymap
-    local wk = require("which-key")
     local pickers = require("telescope.builtin")
     local capabilities = client.server_capabilities
-
-    wk.register({ name = "+lsp", g = "+goto", w = "+workspaces" }, { prefix = "<leader>l" })
 
     local show_line_diagnostics = function()
         vim.diagnostic.open_float({
@@ -183,8 +183,8 @@ local mappings = function(client, bufnr)
         { desc = "Remove workspace folder" }
     )
     keymap.set("n", "<leader>lwl", list_workspaces, { desc = "List workspace folders" })
-    keymap.set("n", "<leader>lh", function()
-        vim.lsp.buf.inlay_hint(bufnr, nil)
+    keymap.set("n", [[\lh]], function()
+        vim.lsp.inlay_hint(bufnr, nil)
     end, { desc = "Toggle inlay hints" })
 end
 
@@ -212,7 +212,7 @@ M.config = function()
             local bufnr = args.buf
             local client = vim.lsp.get_client_by_id(args.data.client_id)
             if client.supports_method("textDocument/inlayHint") then
-                vim.lsp.buf.inlay_hint(bufnr, false)
+                vim.lsp.inlay_hint(bufnr, false)
             end
         end,
         group = group_name,
@@ -278,50 +278,69 @@ M.config = function()
             require("lspconfig")[server_name].setup(opts)
         end,
         ["tsserver"] = function()
-            require("typescript").setup({
-                server = {
-                    debug = false,
-                    on_attach = function(client, bufnr)
-                        client.server_capabilities.documentFormattingProvider = false
-                        client.server_capabilities.documentRangeFormattingProvider = false
-                        on_attach(client, bufnr);
-                    end,
-                    capabilities = cmp_nvim_lsp.default_capabilities(),
-                    settings = {
-                        typescript = {
-                            inlayHints = {
-                                includeInlayParameterNameHints = "all",
-                                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-                                includeInlayFunctionParameterTypeHints = true,
-                                includeInlayVariableTypeHints = false,
-                                includeInlayPropertyDeclarationTypeHints = true,
-                                includeInlayFunctionLikeReturnTypeHints = false,
-                                includeInlayEnumMemberValueHints = true,
-                            },
-                        },
-                        javascript = {
-                            inlayHints = {
-                                includeInlayParameterNameHints = "all",
-                                includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-                                includeInlayFunctionParameterTypeHints = true,
-                                includeInlayVariableTypeHints = false,
-                                includeInlayPropertyDeclarationTypeHints = true,
-                                includeInlayFunctionLikeReturnTypeHints = false,
-                                includeInlayEnumMemberValueHints = true,
-                            },
-                        },
-                    },
-                    init_options = {
-                        hostInfo = "neovim",
-                        plugins = {
-                            {
-                                name = "@styled/typescript-styled-plugin",
-                                location = os.getenv("HOME") .. "/.nvm/versions/node/v16.16.0/lib"
-                            }
-                        }
+            local mason_registry = require('mason-registry')
+            local tsserver_path = mason_registry.get_package('typescript-language-server'):get_install_path()
+
+            require("typescript-tools").setup({
+                on_attach = function(client, bufnr)
+                    client.server_capabilities.documentFormattingProvider = false
+                    client.server_capabilities.documentRangeFormattingProvider = false
+                    on_attach(client, bufnr)
+                end,
+                capabilities = cmp_nvim_lsp.default_capabilities(),
+                settings = {
+                    tsserver_path = tsserver_path .. '/node_modules/typescript/lib/tsserver.js',
+                    tsserver_file_preferences = {
+                        includeInlayParameterNameHints = "all",
+                        includeCompletionsForModuleExports = true,
+                        quotePreference = "auto",
                     }
                 }
             })
+            -- require("typescript").setup({
+            --     server = {
+            --         debug = false,
+            --         on_attach = function(client, bufnr)
+            --             client.server_capabilities.documentFormattingProvider = false
+            --             client.server_capabilities.documentRangeFormattingProvider = false
+            --             on_attach(client, bufnr);
+            --         end,
+            --         capabilities = cmp_nvim_lsp.default_capabilities(),
+            --         settings = {
+            --             typescript = {
+            --                 inlayHints = {
+            --                     includeInlayParameterNameHints = "all",
+            --                     includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+            --                     includeInlayFunctionParameterTypeHints = true,
+            --                     includeInlayVariableTypeHints = false,
+            --                     includeInlayPropertyDeclarationTypeHints = true,
+            --                     includeInlayFunctionLikeReturnTypeHints = false,
+            --                     includeInlayEnumMemberValueHints = true,
+            --                 },
+            --             },
+            --             javascript = {
+            --                 inlayHints = {
+            --                     includeInlayParameterNameHints = "all",
+            --                     includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+            --                     includeInlayFunctionParameterTypeHints = true,
+            --                     includeInlayVariableTypeHints = false,
+            --                     includeInlayPropertyDeclarationTypeHints = true,
+            --                     includeInlayFunctionLikeReturnTypeHints = false,
+            --                     includeInlayEnumMemberValueHints = true,
+            --                 },
+            --             },
+            --         },
+            --         init_options = {
+            --             hostInfo = "neovim",
+            --             plugins = {
+            --                 {
+            --                     name = "@styled/typescript-styled-plugin",
+            --                     location = os.getenv("HOME") .. "/.nvm/versions/node/v16.16.0/lib"
+            --                 }
+            --             }
+            --         }
+            --     }
+            -- })
         end,
         ["lua_ls"] = function()
             local neodev = require("neodev")

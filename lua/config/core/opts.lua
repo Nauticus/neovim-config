@@ -6,7 +6,7 @@ vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor1,a:blinkwait0-blinkon400-blinkoff300"
 vim.opt.diffopt = vim.o.diffopt .. ",algorithm:patience,linematch:60"
 vim.opt.updatetime = 700
-vim.opt.timeoutlen = 200
+vim.opt.timeoutlen = 500
 vim.opt.clipboard = "unnamedplus"
 vim.opt.completeopt = "menu,menuone,noselect,noinsert"
 vim.opt.wildoptions = "pum"
@@ -28,12 +28,18 @@ vim.opt.relativenumber = true
 vim.opt.cursorline = true
 vim.opt.breakindent = false
 vim.opt.linebreak = false
-vim.opt.wrap = true
+vim.opt.wrap = false
 vim.opt.cpo:append("n_")
 vim.opt.list = true
--- vim.opt.listchars:append({
---     eol = "↴"
--- })
+
+vim.opt.listchars:append({
+    extends = "…",
+    precedes = "…",
+    nbsp = "␣",
+    -- eol = "↲",
+})
+
+vim.opt.showmode = false
 vim.opt.showbreak = "»"
 vim.opt.swapfile = false
 vim.opt.undofile = true
