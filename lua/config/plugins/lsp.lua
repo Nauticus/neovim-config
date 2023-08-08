@@ -82,7 +82,7 @@ local mappings = function(client, bufnr)
     if capabilities.definitionProvider then
         keymap.set(
             "n",
-            "<leader>lgd",
+            "gd",
             pickers.lsp_definitions,
             { desc = "Go to definition", buffer = bufnr }
         )
@@ -114,7 +114,7 @@ local mappings = function(client, bufnr)
     if capabilities.referencesProvider then
         keymap.set(
             "n",
-            "<leader>lgr",
+            "gr",
             pickers.lsp_references,
             { desc = "Go to reference", buffer = bufnr }
         )

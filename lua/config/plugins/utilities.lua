@@ -26,29 +26,6 @@ return {
         end,
         ft = "markdown",
     },
-    -- {
-    --     "aserowy/tmux.nvim",
-    --     keys = {
-    --         "<C-l>",
-    --         "<C-h>",
-    --         "<C-j>",
-    --         "<C-k>",
-    --     },
-    --     opts = {
-    --         copy_sync = { enable = false },
-    --     },
-    --     config = true
-    -- },
-    {
-        "numToStr/Navigator.nvim",
-        keys = {
-            { "<C-h>", "<cmd>NavigatorLeft<CR>", desc = "Navigate Left" },
-            { "<C-j>", "<cmd>NavigatorDown<CR>", desc = "Navigate Down" },
-            { "<C-k>", "<cmd>NavigatorUp<CR>", desc = "Navigate Up" },
-            { "<C-l>", "<cmd>NavigatorRight<CR>", desc = "Navigate Right" },
-        },
-        config = true,
-    },
     {
         "anuvyklack/pretty-fold.nvim",
         config = true,

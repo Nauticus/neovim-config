@@ -7,7 +7,18 @@ return {
         require("statuscol").setup({
             setopts = true,
             bt_ignore = { 'terminal' },
-            ft_ignore = { 'oil', 'NvimTree' },
+            ft_ignore = {
+                'oil',
+                'NvimTree',
+                "NeogitCommitMessage",
+                "NeogitCommitView",
+                "NeogitGitCommandHistory",
+                "NeogitLogView",
+                "NeogitNotification",
+                "NeogitPopup",
+                "NeogitStatus",
+                "NeogitStatusNew",
+            },
             segments = {
                 {
                     sign = { name = { "Diagnostic" }, wrap = true },

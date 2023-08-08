@@ -7,5 +7,8 @@ return {
             diffview = true
         },
     },
+    keys = {
+        {"<leader>gn", "<CMD>Neogit<CR>", desc = "Neogit"}
+    },
     config = true
 }
