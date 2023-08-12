@@ -1,8 +1,8 @@
 return {
     -- Docs
-    { "nanotee/luv-vimdocs", event = "VeryLazy" },
-    { "milisims/nvim-luaref", event = "VeryLazy" },
-    { "Asheq/close-buffers.vim", cmd = "Bdelete" },
+    { "nanotee/luv-vimdocs",      event = "VeryLazy" },
+    { "milisims/nvim-luaref",     event = "VeryLazy" },
+    { "Asheq/close-buffers.vim",  cmd = "Bdelete" },
 
     {
         "mbbill/undotree",

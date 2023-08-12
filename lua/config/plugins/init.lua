@@ -34,9 +34,9 @@ return {
                     MatchWord = { bg = colors.surface0, underdashed = true, bold = true },
                     CmpCompletionWindow = { fg = colors.surface2 },
                     LspInlayHint = { bg = colors.mantle, fg = colors.surface2 },
-                    FoldColumn = { fg = colors.surface0 },
+                    FoldColumn = { fg = colors.surface2 },
                     CmpDocumentationWindow = { fg = colors.rosewater },
-                    CursorLine = { bg = "NONE" }
+                    NWinBar = { bg = colors.mantle },
                 }
             end,
             integrations = {

@@ -43,7 +43,7 @@ return {
                 {
                     sign = {
                         name = { "GitSigns" },
-                        fillchar = "┃",
+                        fillchar = "│",
                         maxwidth = 1,
                         colwidth = 1,
                         auto = false,
@@ -51,7 +51,6 @@ return {
                     },
                     click = "v:lua.ScSa"
                 },
-                { text = { " " } }
             },
             clickhandlers = {
                 FoldOther = false,

@@ -1,12 +1,20 @@
 local M = {
     "lewis6991/gitsigns.nvim",
-    event = "BufReadPre",
+    -- event = "BufReadPre",
     dependencies = { "nvim-lua/plenary.nvim" },
 }
 
 function M.config()
     require("gitsigns").setup({
         sign_priority = 5,
+        signs = {
+            add          = { text = '┃' },
+            change       = { text = '┃' },
+            delete       = { text = '╽' },
+            topdelete    = { text = '╿' },
+            changedelete = { text = '┃' },
+            untracked    = { text = '┊' },
+        },
         current_line_blame = false,
         current_line_blame_opts = {
             virt_text = true,

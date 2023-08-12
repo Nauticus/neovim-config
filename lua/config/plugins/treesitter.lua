@@ -16,17 +16,6 @@ return {
         "nvim-treesitter/playground",
         "nvim-treesitter/completion-treesitter",
         "windwp/nvim-ts-autotag",
-        {
-            "andymass/vim-matchup",
-            enabled = false,
-            init = function()
-                -- vim.g.matchup_matchparen_deferred = 1
-                vim.g.matchup_matchparen_hi_surround_always = 1
-                vim.g.matchup_matchparen_offscreen = {}
-                -- vim.g.matchup_matchparen_deferred_show_delay = 200
-                -- vim.g.matchup_matchparen_deferred_hide_delay = 1000
-            end,
-        },
     },
     config = function()
         local treesitter = require("nvim-treesitter")
@@ -66,7 +55,10 @@ return {
                     return vim.api.nvim_buf_line_count(bufnr) > 2000
                 end
             },
-            refactor = { highlight_definitions = { enable = true } },
+            refactor = {
+                highlight_definitions = { enable = true },
+                highlight_current_scope = { enable = false }
+            },
             -- tree_docs = { enable = true },
             incremental_selection = {
                 enable = true,
