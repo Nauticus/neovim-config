@@ -35,7 +35,7 @@ require("lazy").setup("config.plugins", {
         },
     },
     ui = {
-        border = "rounded",
+        border = "single",
     },
     change_detection = {
         notify = false,

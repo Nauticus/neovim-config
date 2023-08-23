@@ -144,6 +144,26 @@ M.config = function()
                 },
             },
             border = true,
+            borderchars = {
+                "─",
+                "│",
+                "─",
+                "│",
+                "╭",
+                "╮",
+                "╯",
+                "╰",
+            },
+            -- borderchars = {
+            --     "─",
+            --     "│",
+            --     "─",
+            --     "│",
+            --     "┌",
+            --     "┐",
+            --     "┘",
+            --     "└",
+            -- },
             mappings = {
                 ["i"] = {
                     ["<C-?>"] = actions.which_key, -- keys from pressing <C-/>

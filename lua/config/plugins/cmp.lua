@@ -1,61 +1,23 @@
+---@diagnostic disable: assign-type-mismatch
+
 return {
     "hrsh7th/nvim-cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
-        "f3fora/cmp-spell",
         "hrsh7th/cmp-buffer",
         "andersevenrud/cmp-tmux",
         { "saadparwaiz1/cmp_luasnip", dependencies = { "L3MON4D3/LuaSnip" } },
-        {
-            "zbirenbaum/copilot-cmp",
-            dependencies = {
-                {
-                    "zbirenbaum/copilot.lua",
-                    config = function()
-                        require("copilot").setup({
-                            suggestion = { enabled = false },
-                            panel = { enabled = false },
-                        })
-                    end
-                }
-            },
-            config = function()
-                require("copilot_cmp").setup()
-            end
-        },
         "hrsh7th/cmp-path",
         "hrsh7th/cmp-nvim-lsp",
         "ray-x/cmp-treesitter",
-        {
-            "tzachar/cmp-tabnine",
-            build = "./install.sh",
-            enabled = false,
-            config = function()
-                local tabnine = require("cmp_tabnine.config")
-
-                tabnine:setup({
-                    max_lines = 1000,
-                    max_num_results = 20,
-                    sort = true,
-                    run_on_every_keystroke = true,
-                    snippet_placeholder = "..",
-                })
-            end,
-        },
         "hrsh7th/cmp-nvim-lua",
         "lukas-reineke/cmp-under-comparator",
-        "hrsh7th/cmp-nvim-lsp-signature-help",
         "hrsh7th/cmp-cmdline",
         "windwp/nvim-autopairs",
     },
     config = function()
         local cmp = require("cmp")
         local luasnip = require("luasnip")
-
-        cmp.event:on(
-            "confirm_done",
-            require("nvim-autopairs.completion.cmp").on_confirm_done({ map_char = { text = "" } })
-        )
 
         local mapping_next = function(fallback)
             if cmp.visible() then
@@ -78,108 +40,68 @@ return {
         end
 
         cmp.setup({
+            performance = {
+                async_budget = 1,
+            },
             snippet = {
                 expand = function(args)
                     luasnip.lsp_expand(args.body)
                 end,
             },
-            view = {
-                entries = "custom",
-                selection_order = "near_cursor",
-            },
-            experimental = { ghost_text = true },
-            -- completion = {
-            --     keyword_length = 1,
-            -- },
-            sortings = {
-                comparators = {
-                    require("copilot_cmp.comparators").prioritize,
-                    cmp.config.compare.exact,
-                    cmp.config.compare.offset,
-                    cmp.config.compare.recently_used,
-                    cmp.config.compare.score,
-                    require("cmp-under-comparator").under,
-                    cmp.config.compare.kind,
-                    cmp.config.compare.sort_text,
-                    cmp.config.compare.length,
-                    cmp.config.compare.order,
-                },
-            },
-            formatting = {
-                fields = { "abbr", "menu", "kind" },
-                format = function(entry, item)
-                    -- Define menu shorthand for different completion sources.
-                    local menu_icon = {
-                        nvim_lsp = "",
-                        nvim_lua = "󰢱",
-                        luasnip  = "󰩫",
-                        buffer   = "󰘤",
-                        path     = "",
-                        copilot  = "󱙺"
-                    }
-                    -- Set the menu "icon" to the shorthand for each completion source.
-                    item.menu = menu_icon[entry.source.name]
-
-                    -- Set the fixed width of the completion menu to 60 characters.
-                    local fixed_width = 50
-
-                    -- Set 'fixed_width' to false if not provided.
-                    fixed_width = fixed_width or false
-
-                    -- Get the completion entry text shown in the completion window.
-                    local content = item.abbr
-
-                    -- Set the fixed completion window width.
-                    if fixed_width then
-                        vim.o.pumwidth = fixed_width
-                    end
-
-                    -- Get the width of the current window.
-                    local win_width = vim.api.nvim_win_get_width(0)
-
-                    -- Set the max content width based on either: 'fixed_width'
-                    -- or a percentage of the window width, in this case 20%.
-                    -- We subtract 10 from 'fixed_width' to leave room for 'kind' fields.
-                    local max_content_width = fixed_width and fixed_width - 10 or math.floor(win_width * 0.2)
-
-                    -- Truncate the completion entry text if it's longer than the
-                    -- max content width. We subtract 3 from the max content width
-                    -- to account for the "..." that will be appended to it.
-                    if #content > max_content_width then
-                        item.abbr = vim.fn.strcharpart(content, 0, max_content_width - 3) .. "..."
-                    else
-                        item.abbr = content .. (" "):rep(max_content_width - #content)
-                    end
-                    return item
-                end,
+            experimental = { ghost_text = false },
+            completion = {
+                keyword_length = 2,
             },
             window = {
                 completion = cmp.config.window.bordered({
-                    border = "single",
-                    winhighlight = "Normal:Normal,FloatBorder:CmpCompletionWindow,CursorLine:Visual,Search:None",
+                    border = "none",
+                    winhighlight = "Normal:CmpCompletionWindowFlat,FloatBorder:CmpCompletionWindow,CursorLine:Visual,Search:None",
                 }),
-                documentation = cmp.config.window.bordered({
-                    border = "single",
-                    winhighlight = "Normal:Normal,FloatBorder:CmpDocumentationWindow,CursorLine:Visual,Search:None",
-                }),
+                documentation = vim.tbl_deep_extend(
+                    "force",
+                    cmp.config.window.bordered({
+                        border = "none",
+                        winhighlight = "Normal:Normal,FloatBorder:CmpDocumentationWindow,CursorLine:Visual,Search:None",
+                    }),
+                    {
+                        max_height = 10,
+                        max_width = 80,
+                    }
+                ),
+            },
+            sorting = {
+                priority_weight = 2,
+                comparators = {
+                    cmp.config.compare.locality,
+                    cmp.config.compare.recently_used,
+                    cmp.config.compare.score,
+                    cmp.config.compare.offset,
+                    cmp.config.compare.order,
+                },
             },
             sources = cmp.config.sources({
-                { name = "copilot" },
-                { name = "nvim_lsp" },
-                { name = "nvim_lsp_signature_help" },
-                -- { name = "cmp_tabnine" },
-                { name = "luasnip",                priority_weight = 50 },
-                { name = "nvim_lua" },
+                {
+                    name = "nvim_lsp",
+                    priority_weight = 9,
+                    entry_filter = function(entry, ctx)
+                        return require("cmp.types").lsp.CompletionItemKind[entry:get_kind()]
+                            ~= "Text"
+                    end,
+                },
+                { name = "luasnip", priority_weight = 7 },
+                { name = "nvim_lua", priority_weight = 6 },
                 { name = "path" },
+            }, {
+                { name = "tmux", max_item_count = 10 },
                 {
                     name = "buffer",
+                    max_item_count = 10,
                     option = {
                         get_bufnrs = function()
                             return vim.api.nvim_list_bufs()
                         end,
                     },
                 },
-                { name = "tmux", max_item_count = 10 },
             }),
             mapping = {
                 ["<C-n>"] = cmp.mapping({
@@ -205,6 +127,9 @@ return {
                     end,
                 }),
 
+                ["<C-f>"] = cmp.mapping.scroll_docs(5),
+                ["<C-u>"] = cmp.mapping.scroll_docs(-5),
+
                 ["<C-j>"] = cmp.mapping(function(fallback)
                     if luasnip.choice_active() then
                         luasnip.change_choice(1)
@@ -220,8 +145,11 @@ return {
                     end
                 end, { "i", "s" }),
 
-                ["<CR>"] = cmp.mapping({
-                    i = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
+                ["<C-y>"] = cmp.mapping({
+                    i = cmp.mapping.confirm({
+                        behavior = cmp.ConfirmBehavior.Replace,
+                        select = false,
+                    }),
                     c = cmp.mapping.confirm({ select = false }),
                 }),
 
@@ -242,12 +170,6 @@ return {
                     end,
                 }),
             },
-        })
-
-        cmp.setup.filetype("harpoon", {
-            sources = cmp.config.sources({
-                { name = "path", priority_weight = 110 },
-            }),
         })
 
         cmp.setup.cmdline("/", {

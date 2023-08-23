@@ -12,7 +12,7 @@ return {
     dependencies = {
         "nvim-treesitter/nvim-treesitter-textobjects",
         "nvim-treesitter/nvim-treesitter-refactor",
-        "nvim-treesitter/nvim-treesitter-context",
+        "JoosepAlviste/nvim-ts-context-commentstring",
         "nvim-treesitter/playground",
         "nvim-treesitter/completion-treesitter",
         "windwp/nvim-ts-autotag",
@@ -44,8 +44,6 @@ return {
             },
         })
 
-        -- require("treesitter-context").setup()
-
         require("nvim-treesitter.configs").setup({
             ensure_installed = "all",
             ignore_install = { "haskell" },
@@ -53,11 +51,11 @@ return {
                 enable = true,
                 disable = function(lang, bufnr)
                     return vim.api.nvim_buf_line_count(bufnr) > 2000
-                end
+                end,
             },
             refactor = {
-                highlight_definitions = { enable = true },
-                highlight_current_scope = { enable = false }
+                highlight_definitions = { enable = false },
+                highlight_current_scope = { enable = false },
             },
             -- tree_docs = { enable = true },
             incremental_selection = {
@@ -79,6 +77,14 @@ return {
                         ["ic"] = "@class.inner",
                         ["ii"] = "@call.inner",
                         ["ai"] = "@call.outer",
+                        ["aC"] = "@conditional.outer",
+                        ["iC"] = "@conditional.inner",
+                        ["al"] = "@loop.outer",
+                        ["il"] = "@loop.inner",
+                        ["ad"] = "@comment.outer",
+                        ["id"] = "@comment.inner",
+                        ["ia"] = "@parameter.inner",
+                        ["aa"] = "@parameter.outer",
                     },
                 },
             },
@@ -87,7 +93,7 @@ return {
             indent = { enable = true },
             playground = {
                 enable = true,
-                updatetime = 25,        -- Debounced time for highlighting nodes in the playground from source code
+                updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
                 persist_queries = true, -- Whether the query persists across vim sessions
             },
         })

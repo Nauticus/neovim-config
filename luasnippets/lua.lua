@@ -1,4 +1,4 @@
-local ls = require "luasnip"
+local ls = require("luasnip")
 local s = ls.snippet
 local sn = ls.snippet_node
 local t = ls.text_node
@@ -7,7 +7,7 @@ local i = ls.insert_node
 local c = ls.choice_node
 local d = ls.dynamic_node
 local r = ls.restore_node
-local events = require "luasnip.util.events"
+local events = require("luasnip.util.events")
 local fmt = require("luasnip.extras.fmt").fmt
 local rep = require("luasnip.extras").rep
 
@@ -17,9 +17,9 @@ rec_ls = function()
     return sn(nil, {
         c(1, {
             -- important!! Having the sn(...) as the first choice will cause infinite recursion.
-            t { "" },
+            t({ "" }),
             -- The same dynamicNode as in the snippet (also note: self reference).
-            sn(nil, { t { "", "\t\\item " }, i(1), d(2, rec_ls, {}) }),
+            sn(nil, { t({ "", "\t\\item " }), i(1), d(2, rec_ls, {}) }),
         }),
     })
 end
@@ -37,7 +37,7 @@ local require_var = function(args, _)
         return sn(nil, {
             c(1, {
                 i(nil),
-            })
+            }),
         })
     end
 
@@ -48,10 +48,12 @@ end
 
 local get_package_from_clipboard = function()
     -- Get the author and URL in the clipboard and auto populate the author and project
-    local default = s("", { i(1, "author"), t "/", i(2, "plugin") })
-    local clip = vim.fn.getreg "*"
+    local default = s("", { i(1, "author"), t("/"), i(2, "plugin") })
+    local clip = vim.fn.getreg("*")
 
-    print(clip)
+    if not clip or type(clip) ~= "string" then
+        return default
+    end
 
     if not vim.startswith(clip, "https://github.com/") then
         return default
@@ -65,9 +67,13 @@ local get_package_from_clipboard = function()
 end
 
 local get_rhs_from_clipboard = function()
-    local ok, clip = pcall(vim.fn.getreg "*")
+    local clip = vim.fn.getreg("*")
 
-    clip = ok and clip or ""
+    if not clip or type(clip) ~= "string" then
+        return sn(nil, {
+            i(nil),
+        })
+    end
 
     return sn(nil, {
         t(clip),
@@ -93,20 +99,22 @@ return {
     ),
     s(
         { trig = "prc", name = "Protected require call." },
-        fmt([[
+        fmt(
+            [[
         local has_{}, {} = pcall(require, "{}")
         if not has_{} then
             vim.notify("{} is missing", vim.log.levels.WARN)
             return
         end
-        ]], {
-            rep(2),
-            d(2, require_var, { 1 }),
-            i(1),
-            rep(2),
-            rep(1)
-
-        })
+        ]],
+            {
+                rep(2),
+                d(2, require_var, { 1 }),
+                i(1),
+                rep(2),
+                rep(1),
+            }
+        )
     ),
     s(
         { trig = "local", name = "local variable" },
@@ -119,9 +127,9 @@ return {
         { trig = "tblext", name = "vim extend table" },
         fmt("vim.tbl_extend({}, {}, {})", {
             c(1, {
-                t '"force"',
-                t '"error"',
-                t '"keep"',
+                t('"force"'),
+                t('"error"'),
+                t('"keep"'),
             }),
             i(2, "tbl1"),
             i(3, "tbl2"),
@@ -131,13 +139,13 @@ return {
         { trig = "use", name = "packer use" },
         fmt([[{}{{"{}"{}}}]], {
             c(1, {
-                t "",
-                t "use ",
+                t(""),
+                t("use "),
             }),
             d(2, get_package_from_clipboard),
             c(3, {
                 fmt([[, config = {}]], i(1)),
-                t "",
+                t(""),
             }),
         })
     ),
@@ -146,22 +154,22 @@ return {
         fmt(
             "-- stylua: ignore{}",
             c(1, {
-                t "",
-                t " start",
-                t " end",
+                t(""),
+                t(" start"),
+                t(" end"),
             })
         )
     ),
     s("ls", {
-        t { "\\begin{itemize}", "\t\\item " },
+        t({ "\\begin{itemize}", "\t\\item " }),
         i(1),
         d(2, rec_ls, {}),
-        t { "", "\\end{itemize}" },
+        t({ "", "\\end{itemize}" }),
         i(0),
     }),
     s("test", {
         i(1),
-        t "<->",
+        t("<->"),
         rep(1),
     }, {
         callbacks = {
@@ -176,8 +184,8 @@ return {
         { trig = "vim.keymap.set", name = "set keymap" },
         fmt([[{}keymap.set({}, {}, {}, {})]], {
             c(1, {
-                t "",
-                t "vim.",
+                t(""),
+                t("vim."),
             }),
             c(2, {
                 fmt('"{}"', r(1, "mode")),
@@ -189,7 +197,7 @@ return {
                 fmt('"<localleader>{}"', r(1, "lhs")),
             }),
             c(4, {
-                t "",
+                t(""),
                 i(nil),
                 d(nil, get_rhs_from_clipboard),
             }),

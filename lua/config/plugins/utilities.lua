@@ -1,8 +1,8 @@
 return {
     -- Docs
-    { "nanotee/luv-vimdocs",      event = "VeryLazy" },
-    { "milisims/nvim-luaref",     event = "VeryLazy" },
-    { "Asheq/close-buffers.vim",  cmd = "Bdelete" },
+    { "nanotee/luv-vimdocs", event = "VeryLazy" },
+    { "milisims/nvim-luaref", event = "VeryLazy" },
+    { "Asheq/close-buffers.vim", cmd = "Bdelete" },
 
     {
         "mbbill/undotree",
@@ -10,10 +10,18 @@ return {
         keys = {
             { [[\u]], ":UndotreeToggle<CR>", desc = "Undotree" },
         },
+        config = function()
+            vim.g.undotree_WindowLayout = 2
+            vim.g.undotree_SetFocusWhenToggle = 1
+            vim.g.undotree_SplitWidth = 35
+        end,
     },
     {
         "norcalli/nvim-colorizer.lua",
         cmd = { "ColorizerToggle", "ColorizerAttachToBuffer" },
+        keys = {
+            { [[\c]], "<CMD>ColorizerToggle<CR>", desc = "Colorizer" },
+        },
         opts = {
             scss = { rgb_fn = true },
             css = { rgb_fn = true },
@@ -32,12 +40,24 @@ return {
     },
     {
         "numToStr/Comment.nvim",
-        keys = { "gc", "gb", { "gc", mode = "v" }, { "gb", mode = "v" } },
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
-        opts = {
-            padding = true,
+        keys = {
+            { "gcc", mode = "n", desc = "Comment toggle current line" },
+            { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
+            { "gc", mode = "x", desc = "Comment toggle linewise (visual)" },
+            { "gbc", mode = "n", desc = "Comment toggle current block" },
+            { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
+            { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
         },
-        config = true,
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        lazy = false,
+        config = function()
+            require("Comment").setup({
+                pre_hook = function(ctx)
+                    return require("ts_context_commentstring.internal").calculate_commentstring()
+                end,
+                padding = true,
+            })
+        end,
     },
     {
         "zbirenbaum/neodim",

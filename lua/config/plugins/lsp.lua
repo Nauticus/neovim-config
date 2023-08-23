@@ -20,7 +20,6 @@ local M = {
         },
         "b0o/schemastore.nvim",
         "folke/neodev.nvim",
-        "hrsh7th/cmp-nvim-lsp",
         {
             "pmizio/typescript-tools.nvim",
             dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
@@ -37,10 +36,22 @@ local M = {
         {
             "folke/trouble.nvim",
             dependencies = { "nvim-tree/nvim-web-devicons" },
-            opts = {}
-        }
+            opts = {},
+        },
     },
 }
+-- set signs for diagnostics
+local signs = {
+    Error = " ",
+    Warn = " ",
+    Hint = " ",
+    Info = " ",
+}
+
+for type, icon in pairs(signs) do
+    local hl = "DiagnosticSign" .. type
+    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+end
 
 vim.diagnostic.config({
     float = {
@@ -87,6 +98,20 @@ local mappings = function(client, bufnr)
             { desc = "Go to definition", buffer = bufnr }
         )
     end
+    if capabilities.signatureHelpProvider then
+        keymap.set(
+            "n",
+            "gs",
+            vim.lsp.buf.signature_help,
+            { desc = "Show signature help", buffer = bufnr }
+        )
+        keymap.set(
+            "i",
+            "<C-s>",
+            vim.lsp.buf.signature_help,
+            { desc = "Show signature help", buffer = bufnr }
+        )
+    end
     if capabilities.declarationProvider then
         keymap.set(
             "n",
@@ -112,12 +137,7 @@ local mappings = function(client, bufnr)
         )
     end
     if capabilities.referencesProvider then
-        keymap.set(
-            "n",
-            "gr",
-            pickers.lsp_references,
-            { desc = "Go to reference", buffer = bufnr }
-        )
+        keymap.set("n", "gr", pickers.lsp_references, { desc = "Go to reference", buffer = bufnr })
     end
 
     -- Lsp specific
@@ -143,9 +163,6 @@ local mappings = function(client, bufnr)
             buffer = bufnr,
         })
     end
-    -- if capabilities.documentRangeFormattingProvider then
-    --     keymap.set("v", "<leader>lf", vim.lsp.buf.range_formatting, { desc = "Range format" })
-    -- end
     if capabilities.codeActionProvider then
         keymap.set(
             "n",
@@ -191,14 +208,14 @@ end
 local function on_attach(client, bufnr)
     mappings(client, bufnr)
 
-    vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-        border = "single",
-        max_width = 80,
-    })
-
     vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
         border = "single",
         max_width = 120,
+    })
+
+    vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+        border = "single",
+        close_events = { "CursorMoved", "BufHidden", "InsertCharPre" },
     })
 end
 
@@ -211,7 +228,7 @@ M.config = function()
         callback = function(args)
             local bufnr = args.buf
             local client = vim.lsp.get_client_by_id(args.data.client_id)
-            if client.supports_method("textDocument/inlayHint") then
+            if client and client.supports_method("textDocument/inlayHint") then
                 vim.lsp.inlay_hint(bufnr, false)
             end
         end,
@@ -229,8 +246,9 @@ M.config = function()
             null_ls.builtins.code_actions.gitsigns,
             null_ls.builtins.formatting.yamlfmt,
             null_ls.builtins.formatting.prettier,
+            null_ls.builtins.formatting.stylua,
         },
-        on_attach = on_attach
+        on_attach = on_attach,
     })
 
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
@@ -278,8 +296,9 @@ M.config = function()
             require("lspconfig")[server_name].setup(opts)
         end,
         ["tsserver"] = function()
-            local mason_registry = require('mason-registry')
-            local tsserver_path = mason_registry.get_package('typescript-language-server'):get_install_path()
+            local mason_registry = require("mason-registry")
+            local tsserver_path =
+                mason_registry.get_package("typescript-language-server"):get_install_path()
 
             require("typescript-tools").setup({
                 on_attach = function(client, bufnr)
@@ -289,58 +308,14 @@ M.config = function()
                 end,
                 capabilities = cmp_nvim_lsp.default_capabilities(),
                 settings = {
-                    tsserver_path = tsserver_path .. '/node_modules/typescript/lib/tsserver.js',
+                    tsserver_path = tsserver_path .. "/node_modules/typescript/lib/tsserver.js",
                     tsserver_file_preferences = {
                         includeInlayParameterNameHints = "all",
                         includeCompletionsForModuleExports = true,
                         quotePreference = "auto",
-                    }
-                }
+                    },
+                },
             })
-            -- require("typescript").setup({
-            --     server = {
-            --         debug = false,
-            --         on_attach = function(client, bufnr)
-            --             client.server_capabilities.documentFormattingProvider = false
-            --             client.server_capabilities.documentRangeFormattingProvider = false
-            --             on_attach(client, bufnr);
-            --         end,
-            --         capabilities = cmp_nvim_lsp.default_capabilities(),
-            --         settings = {
-            --             typescript = {
-            --                 inlayHints = {
-            --                     includeInlayParameterNameHints = "all",
-            --                     includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-            --                     includeInlayFunctionParameterTypeHints = true,
-            --                     includeInlayVariableTypeHints = false,
-            --                     includeInlayPropertyDeclarationTypeHints = true,
-            --                     includeInlayFunctionLikeReturnTypeHints = false,
-            --                     includeInlayEnumMemberValueHints = true,
-            --                 },
-            --             },
-            --             javascript = {
-            --                 inlayHints = {
-            --                     includeInlayParameterNameHints = "all",
-            --                     includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-            --                     includeInlayFunctionParameterTypeHints = true,
-            --                     includeInlayVariableTypeHints = false,
-            --                     includeInlayPropertyDeclarationTypeHints = true,
-            --                     includeInlayFunctionLikeReturnTypeHints = false,
-            --                     includeInlayEnumMemberValueHints = true,
-            --                 },
-            --             },
-            --         },
-            --         init_options = {
-            --             hostInfo = "neovim",
-            --             plugins = {
-            --                 {
-            --                     name = "@styled/typescript-styled-plugin",
-            --                     location = os.getenv("HOME") .. "/.nvm/versions/node/v16.16.0/lib"
-            --                 }
-            --             }
-            --         }
-            --     }
-            -- })
         end,
         ["lua_ls"] = function()
             local neodev = require("neodev")
@@ -348,12 +323,16 @@ M.config = function()
             neodev.setup()
 
             require("lspconfig").lua_ls.setup({
-                on_attach = on_attach,
+                on_attach = function(client, bufnr)
+                    client.server_capabilities.documentFormattingProvider = false
+                    client.server_capabilities.documentRangeFormattingProvider = false
+                    on_attach(client, bufnr)
+                end,
                 capabilities = cmp_nvim_lsp.default_capabilities(),
                 settings = {
                     Lua = {
                         hint = {
-                            enable = true
+                            enable = true,
                         },
                         completion = {
                             callSnippet = "Replace",
