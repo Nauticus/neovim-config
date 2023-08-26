@@ -10,7 +10,7 @@ vim.opt.timeoutlen = 500
 vim.opt.clipboard = "unnamedplus"
 vim.opt.completeopt = "menu,menuone,noselect,noinsert"
 vim.opt.wildoptions = "pum"
-vim.opt.pumblend = 0
+vim.opt.pumblend = 10
 vim.opt.pumheight = 15
 vim.opt.hidden = true
 vim.opt.splitright = true
@@ -73,3 +73,8 @@ vim.opt.foldenable = true
 vim.opt.foldcolumn = "1"
 vim.opt.foldlevelstart = 99
 -- vim.opt.statuscolumn = "%s %=%{&nu?(&rnu&&v:relnum?v:relnum:v:lnum):''} %#GutterSep#▏%*%T"
+if vim.g.started_by_firenvim then
+    vim.opt.guifont = "monospace:h18"
+    vim.opt.laststatus = 0
+    vim.opt.wrap = true
+end

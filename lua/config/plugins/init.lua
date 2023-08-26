@@ -46,7 +46,7 @@ return {
                         LuaSnipModeInsert = { fg = colors.mantle, bg = colors.green },
                         IndentBlanklineChar = { fg = colors.base },
                         IndentBlanklineContextChar = { fg = colors.surface0 },
-                        CmpCompletionWindowFlat = { fg = colors.text, bg = colors.mantle },
+                        CmpCompletionWindowFlat = { fg = colors.text, bg = colors.surface0 },
                         CmpItemAbbrMatch = { fg = colors.blue },
                         CmpItemAbbr = { fg = utils.darken(colors.text, 0.6, colors.mantle) },
                         CmpItemAbbrMatchFuzzy = { link = "CmpItemAbbrMatch" },

@@ -60,7 +60,7 @@ return {
                 documentation = vim.tbl_deep_extend(
                     "force",
                     cmp.config.window.bordered({
-                        border = "none",
+                        border = "single",
                         winhighlight = "Normal:Normal,FloatBorder:CmpDocumentationWindow,CursorLine:Visual,Search:None",
                     }),
                     {
@@ -75,6 +75,7 @@ return {
                     cmp.config.compare.locality,
                     cmp.config.compare.recently_used,
                     cmp.config.compare.score,
+                    cmp.config.compare.sort_text,
                     cmp.config.compare.offset,
                     cmp.config.compare.order,
                 },

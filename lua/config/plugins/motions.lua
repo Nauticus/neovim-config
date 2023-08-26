@@ -1,26 +1,35 @@
 return {
-    { "kylechui/nvim-surround",     event = "BufReadPre", config = true },
+    {"lewis6991/whatthejump.nvim"},
+    { "kylechui/nvim-surround", event = "BufReadPre", config = true },
     {
-        'echasnovski/mini.basics',
+        "echasnovski/mini.basics",
         version = "*",
         config = function()
             require("mini.basics").setup({
                 options = { basic = false, extra_ui = false },
                 mappings = {
                     basic = true,
-                    option_toggle_prefix = ""
-                }
+                    option_toggle_prefix = "",
+                },
             })
-        end
+        end,
     },
-    { 'echasnovski/mini.bracketed', version = '*',        config = true },
+    { "echasnovski/mini.bracketed", version = "*", config = true },
     -- { "tpope/vim-unimpaired" },
-    { "junegunn/vim-easy-align",    cmd = "EasyAlign" },
+    { "junegunn/vim-easy-align", cmd = "EasyAlign" },
     {
         "folke/flash.nvim",
         event = "VeryLazy",
         ---@type Flash.Config
-        opts = {},
+        opts = {
+            modes = {
+                char = {
+                    multi_line = false,
+                    highlight = { backdrop = false },
+                },
+            },
+        },
+        config = true,
         keys = {
             {
                 "r",
@@ -29,6 +38,16 @@ return {
                     require("flash").remote()
                 end,
                 desc = "Remote Flash",
+            },
+
+            {
+                "R",
+                mode = "o",
+                function()
+                    require("flash").treesitter({
+                        highlight = { backdrop = true },
+                    })
+                end,
             },
         },
     },

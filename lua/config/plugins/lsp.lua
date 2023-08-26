@@ -24,8 +24,6 @@ local M = {
             "pmizio/typescript-tools.nvim",
             dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
         },
-        -- Lsp
-        { "j-hui/fidget.nvim", config = true },
         {
             "jose-elias-alvarez/null-ls.nvim",
             event = "BufReadPre",

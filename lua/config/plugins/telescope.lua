@@ -1,12 +1,12 @@
 local M = {
     "nvim-telescope/telescope.nvim",
+    tag = "0.1.2",
     cmd = "Telescope",
     dependencies = {
         {
             "nvim-telescope/telescope-fzf-native.nvim",
             enabled = true,
-            build =
-            "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+            build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
         },
         { "kyoh86/telescope-windows.nvim" },
         { "nvim-lua/popup.nvim" },
@@ -54,7 +54,10 @@ local M = {
         {
             "<leader>sg",
             function()
-                require("telescope.builtin").grep_string({ search = "" })
+                require("telescope.builtin").grep_string({
+                    prompt_title = "Search in files",
+                    search = "",
+                })
             end,
             desc = "Grep interactive",
         },
@@ -73,22 +76,22 @@ local M = {
             function()
                 require("telescope.builtin").command_history()
             end,
-            desc = "Command History"
+            desc = "Command History",
         },
         {
             "<leader>scb",
             function()
                 require("telescope.builtin").current_buffer_fuzzy_find()
             end,
-            desc = "Current Buffer Fuzzy Find"
+            desc = "Current Buffer Fuzzy Find",
         },
         {
             "<leader>sb",
             function()
                 require("telescope.builtin").buffers()
             end,
-            desc = "Buffers"
-        }
+            desc = "Buffers",
+        },
     },
 }
 
@@ -176,22 +179,22 @@ M.config = function()
                 include_extensions = true,
             },
             command_history = {
-                theme = "ivy"
+                theme = "ivy",
             },
             oldfiles = {
                 only_cwd = true,
             },
             lsp_references = {
-                theme = "ivy"
+                theme = "ivy",
             },
             lsp_definitions = {
-                theme = "ivy"
+                theme = "ivy",
             },
             lsp_implementations = {
-                theme = "ivy"
+                theme = "ivy",
             },
             lsp_type_definitions = {
-                theme = "ivy"
+                theme = "ivy",
             },
             find_files = {
                 find_command = { "rg", "--files", "--iglob", "!.git", "--hidden" },
@@ -214,10 +217,10 @@ M.config = function()
                 require("telescope.themes").get_dropdown({}),
             },
             fzf = {
-                fuzzy = true,                   -- false will only do exact matching
+                fuzzy = true, -- false will only do exact matching
                 override_generic_sorter = true, -- override the generic sorter
-                override_file_sorter = true,    -- override the file sorter
-                case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
+                override_file_sorter = true, -- override the file sorter
+                case_mode = "smart_case", -- or "ignore_case" or "respect_case"
                 -- the default case_mode is "smart_case"
             },
         },
