@@ -25,13 +25,6 @@ local M = {
             dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
         },
         {
-            "jose-elias-alvarez/null-ls.nvim",
-            event = "BufReadPre",
-            dependencies = {
-                "jayp0521/mason-null-ls.nvim",
-            },
-        },
-        {
             "folke/trouble.nvim",
             dependencies = { "nvim-tree/nvim-web-devicons" },
             opts = {},
@@ -155,12 +148,6 @@ local mappings = function(client, bufnr)
             { desc = "Rename symbol under cursor", buffer = bufnr }
         )
     end
-    if capabilities.documentFormattingProvider then
-        keymap.set("n", "<leader>lf", lsp_formatting, {
-            desc = "Format",
-            buffer = bufnr,
-        })
-    end
     if capabilities.codeActionProvider then
         keymap.set(
             "n",
@@ -218,7 +205,6 @@ local function on_attach(client, bufnr)
 end
 
 M.config = function()
-    local null_ls = require("null-ls")
     local group_name = "vimrc_mason_lspconfig"
     vim.api.nvim_create_augroup(group_name, { clear = true })
 
@@ -231,22 +217,6 @@ M.config = function()
             end
         end,
         group = group_name,
-    })
-
-    require("mason-null-ls").setup({
-        ensure_installed = { "stylua", "prettier", "yamlfmt" },
-        automatic_setup = true,
-    })
-
-    null_ls.setup({
-        debug = false,
-        sources = {
-            null_ls.builtins.code_actions.gitsigns,
-            null_ls.builtins.formatting.yamlfmt,
-            null_ls.builtins.formatting.prettier,
-            null_ls.builtins.formatting.stylua,
-        },
-        on_attach = on_attach,
     })
 
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
