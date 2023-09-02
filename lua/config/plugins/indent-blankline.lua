@@ -1,6 +1,6 @@
 return {
     "lukas-reineke/indent-blankline.nvim",
-    enabled = true,
+    enabled = false,
     opts = {
         filetype = {
             "javascript",
@@ -15,7 +15,7 @@ return {
         use_treesitter = true,
         use_treesitter_scope = true,
         show_current_context = true,
-        show_current_context_start = false,
+        show_current_context_start = true,
         disable_with_nolist = true,
     },
     config = true,

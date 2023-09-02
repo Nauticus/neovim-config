@@ -49,6 +49,7 @@ return {
             ignore_install = { "haskell" },
             highlight = {
                 enable = true,
+                additional_vim_regex_highlighting = false,
                 disable = function(lang, bufnr)
                     return vim.api.nvim_buf_line_count(bufnr) > 2000
                 end,

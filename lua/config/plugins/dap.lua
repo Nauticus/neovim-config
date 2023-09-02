@@ -1,5 +1,6 @@
 return {
     "mfussenegger/nvim-dap",
+    enabled = false,
     keys = {
         { "<leader>dc", "<cmd>lua require('dap').continue()<CR>", desc = "Continue" },
         { "<leader>dr", "<cmd>lua require('dap').repl.open()<CR>", desc = "Open REPL" },

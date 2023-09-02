@@ -26,6 +26,7 @@ local M = {
         },
         {
             "folke/trouble.nvim",
+            cmd = { "TroubleToggle", "Trouble" },
             dependencies = { "nvim-tree/nvim-web-devicons" },
             opts = {},
         },

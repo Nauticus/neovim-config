@@ -1,5 +1,4 @@
 return {
-    {"lewis6991/whatthejump.nvim"},
     { "kylechui/nvim-surround", event = "BufReadPre", config = true },
     {
         "echasnovski/mini.basics",

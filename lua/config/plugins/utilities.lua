@@ -49,10 +49,10 @@ return {
             { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
         },
         dependencies = { "nvim-treesitter/nvim-treesitter" },
-        lazy = false,
         config = function()
             require("Comment").setup({
                 pre_hook = function(ctx)
+                    ---@diagnostic disable-next-line: return-type-mismatch
                     return require("ts_context_commentstring.internal").calculate_commentstring()
                 end,
                 padding = true,
