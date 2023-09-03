@@ -7,6 +7,7 @@ local M = {
             opts = {
                 ensure_installed = { "lua_ls", "tsserver", "jsonls", "eslint" },
             },
+            config = true,
             dependencies = {
                 "williamboman/mason.nvim",
                 config = function()
@@ -65,15 +66,6 @@ local mappings = function(client, bufnr)
             focusable = false,
             border = "rounded",
             header = "Line Diagnostics:",
-        })
-    end
-
-    local lsp_formatting = function()
-        vim.lsp.buf.format({
-            filter = function(c)
-                return c.name ~= "sumneko_lua"
-            end,
-            bufnr = bufnr,
         })
     end
 

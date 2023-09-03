@@ -24,6 +24,8 @@ return {
         local foldmethod_backups = {}
         local foldexpr_backups = {}
 
+        vim.treesitter.language.register("bash", "zsh")
+
         treesitter.define_modules({
             folding = {
                 enable = true,
@@ -50,9 +52,9 @@ return {
             highlight = {
                 enable = true,
                 additional_vim_regex_highlighting = false,
-                disable = function(lang, bufnr)
-                    return vim.api.nvim_buf_line_count(bufnr) > 2000
-                end,
+                -- disable = function(lang, bufnr)
+                --     return vim.api.nvim_buf_line_count(bufnr) > 2000
+                -- end,
             },
             refactor = {
                 highlight_definitions = { enable = false },

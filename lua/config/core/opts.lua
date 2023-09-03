@@ -69,6 +69,7 @@ vim.opt.inccommand = "split"
 vim.opt.splitkeep = "cursor"
 vim.opt.laststatus = 3
 vim.opt.cmdheight = 1
+vim.opt.showcmd = false
 vim.opt.foldenable = true
 vim.opt.foldcolumn = "1"
 vim.opt.foldlevelstart = 99

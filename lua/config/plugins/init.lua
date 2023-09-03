@@ -22,6 +22,7 @@ return {
             local utils = require("catppuccin.utils.colors")
             require("catppuccin").setup({
                 flavour = "mocha", -- latte, frappe, macchiato, mocha
+                compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
                 transparent_background = true,
                 styles = {
                     variables = {},
@@ -51,6 +52,10 @@ return {
                         CmpItemAbbr = { fg = utils.darken(colors.text, 0.6, colors.mantle) },
                         CmpItemAbbrMatchFuzzy = { link = "CmpItemAbbrMatch" },
                         GitSignsUntracked = { fg = utils.blend(colors.green, colors.surface2, 0.5) },
+                        FlashBackdrop = { fg = colors.overlay0 },
+                        FlashLabel = { bg = colors.green, fg = colors.mantle, style = { "bold" } },
+                        FlashMatch = { bg = colors.lavender, fg = colors.mantle },
+                        FlashCurrent = { bg = colors.peach, fg = colors.mantle },
                     }
                 end,
                 integrations = {
