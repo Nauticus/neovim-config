@@ -1,22 +1,27 @@
 return {
     "lukas-reineke/indent-blankline.nvim",
-    enabled = false,
-    opts = {
-        filetype = {
-            "javascript",
-            "javascriptreact",
-            "typescript",
-            "typescriptreact",
-            "lua",
-            "go",
-            "yaml",
-            "json",
+    enabled = true,
+    branch = "v3",
+    keys = {
+        {
+            [[\i]],
+            "<CMD>IBLToggle<CR>",
+            desc = "Toggle indent-blankline",
         },
-        use_treesitter = true,
-        use_treesitter_scope = true,
-        show_current_context = true,
-        show_current_context_start = true,
-        disable_with_nolist = true,
     },
-    config = true,
+    config = function()
+        require("ibl").setup({
+            enabled = false,
+            indent = {
+                char = "╎",
+                highlight = "IndentBlanklineIndent",
+            },
+            scope = {
+                enabled = true,
+                show_start = false,
+                show_end = false,
+                highlight = "IndentBlanklineScope",
+            },
+        })
+    end,
 }

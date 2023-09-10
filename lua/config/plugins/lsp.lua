@@ -55,7 +55,7 @@ vim.diagnostic.config({
 
 local mappings = function(client, bufnr)
     local keymap = vim.keymap
-    local pickers = require("telescope.builtin")
+    local fzf_lua = require("fzf-lua")
     local capabilities = client.server_capabilities
 
     local show_line_diagnostics = function()
@@ -73,14 +73,21 @@ local mappings = function(client, bufnr)
         vim.pretty_print(vim.lsp.buf.list_workspace_folders())
     end
 
+    local fzf_winopts = {
+        preview = {
+            layout = "vertical",
+            title = false,
+        },
+    }
+
     -- Go to
     if capabilities.definitionProvider then
-        keymap.set(
-            "n",
-            "gd",
-            pickers.lsp_definitions,
-            { desc = "Go to definition", buffer = bufnr }
-        )
+        keymap.set("n", "gd", function()
+            fzf_lua.lsp_definitions({
+                jump_to_single_result = true,
+                winopts = fzf_winopts,
+            })
+        end, { desc = "Go to definition", buffer = bufnr })
     end
     if capabilities.signatureHelpProvider then
         keymap.set(
@@ -105,23 +112,28 @@ local mappings = function(client, bufnr)
         )
     end
     if capabilities.implementationProvider then
-        keymap.set(
-            "n",
-            "<leader>lgi",
-            pickers.lsp_implementations,
-            { desc = "Go to implementation", buffer = bufnr }
-        )
+        keymap.set("n", "<leader>lgi", function()
+            fzf_lua.lsp_implementations({
+                jump_to_single_result = true,
+                winopts = fzf_winopts,
+            })
+        end, { desc = "Go to implementation", buffer = bufnr })
     end
     if capabilities.typeDefinitionProvider then
-        keymap.set(
-            "n",
-            "<leader>lgt",
-            pickers.lsp_type_definitions,
-            { desc = "Go to type definition", buffer = bufnr }
-        )
+        keymap.set("n", "<leader>lgt", function()
+            fzf_lua.lsp_typedefs({
+                jump_to_single_result = true,
+                winopts = fzf_winopts,
+            })
+        end, { desc = "Go to type definition", buffer = bufnr })
     end
     if capabilities.referencesProvider then
-        keymap.set("n", "gr", pickers.lsp_references, { desc = "Go to reference", buffer = bufnr })
+        keymap.set("n", "gr", function()
+            fzf_lua.lsp_references({
+                jump_to_single_result = true,
+                winopts = fzf_winopts,
+            })
+        end, { desc = "Go to reference", buffer = bufnr })
     end
 
     -- Lsp specific
@@ -251,7 +263,7 @@ M.config = function()
             end
 
             if config[server_name] then
-                opts = vim.tbl_extend("force", opts, config[server_name])
+                opts = vim.tbl_extend("force", opts, config[server_name] or {})
             end
 
             require("lspconfig")[server_name].setup(opts)

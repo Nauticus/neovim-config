@@ -18,7 +18,7 @@ return {
         lazy = false,
         priority = 1000,
         name = "catppuccin",
-        config = function(_, opts)
+        config = function()
             local utils = require("catppuccin.utils.colors")
             require("catppuccin").setup({
                 flavour = "mocha", -- latte, frappe, macchiato, mocha
@@ -26,8 +26,9 @@ return {
                 transparent_background = true,
                 styles = {
                     variables = {},
-                    conditionals = {},
+                    conditionals = { "bold" },
                     types = {},
+                    keywords = { "bold" },
                 },
                 custom_highlights = function(colors)
                     return {
@@ -41,21 +42,20 @@ return {
                         LspReferenceRead = { bg = colors.surface0 }, -- used for highlighting "read" references
                         LspReferenceWrite = { bg = colors.surface0 }, -- used for highlighting "write" references
                         FoldColumn = { fg = colors.surface2 },
-                        CmpDocumentationWindow = { fg = colors.rosewater },
                         NWinBar = { bg = colors.mantle },
                         LuaSnipModeChoice = { fg = colors.mantle, bg = colors.teal },
                         LuaSnipModeInsert = { fg = colors.mantle, bg = colors.green },
-                        IndentBlanklineChar = { fg = colors.base },
-                        IndentBlanklineContextChar = { fg = colors.surface0 },
+                        CmpDocumentationWindow = { fg = colors.rosewater },
                         CmpCompletionWindowFlat = { fg = colors.text, bg = colors.surface0 },
                         CmpItemAbbrMatch = { fg = colors.blue },
                         CmpItemAbbr = { fg = utils.darken(colors.text, 0.6, colors.mantle) },
                         CmpItemAbbrMatchFuzzy = { link = "CmpItemAbbrMatch" },
                         GitSignsUntracked = { fg = utils.blend(colors.green, colors.surface2, 0.5) },
-                        FlashBackdrop = { fg = colors.overlay0 },
-                        FlashLabel = { bg = colors.green, fg = colors.mantle, style = { "bold" } },
-                        FlashMatch = { bg = colors.lavender, fg = colors.mantle },
-                        FlashCurrent = { bg = colors.peach, fg = colors.mantle },
+                        IndentBlanklineIndent = { fg = colors.surface0 },
+                        IndentBlanklineScope = { fg = colors.overlay0 },
+                        IlluminatedWordText = { bg = colors.surface0 },
+                        IlluminatedWordRead = { bg = colors.surface0 },
+                        IlluminatedWordWrite = { bg = colors.surface0 },
                     }
                 end,
                 integrations = {
@@ -68,9 +68,7 @@ return {
                     mason = true,
                     semantic_tokens = true,
                     treesitter = true,
-                    treesitter_context = true,
                     which_key = true,
-                    flash = true,
                     indent_blankline = true,
                     native_lsp = {
                         enabled = true,

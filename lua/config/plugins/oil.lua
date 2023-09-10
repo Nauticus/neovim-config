@@ -12,12 +12,7 @@ return {
         },
     },
     opts = {
-        columns = {
-            -- "permissions",
-            -- "size",
-            -- "mtime",
-            "icon",
-        },
+        columns = {},
         keymaps = {
             ["g?"] = "actions.show_help",
             ["<CR>"] = "actions.select",
