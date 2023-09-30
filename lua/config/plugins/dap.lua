@@ -4,9 +4,21 @@ return {
     keys = {
         { "<leader>dc", "<cmd>lua require('dap').continue()<CR>", desc = "Continue" },
         { "<leader>dr", "<cmd>lua require('dap').repl.open()<CR>", desc = "Open REPL" },
-        { "<leader>db", "<cmd>lua require('dap').toggle_breakpoint()<CR>", desc = "Toggle breakpoint" },
-        { "<leader>dB", "<cmd>lua require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>", desc = "Set breakpoint with condition" },
-        { "<leader>dl", "<cmd>lua require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>", desc = "Set log point" },
+        {
+            "<leader>db",
+            "<cmd>lua require('dap').toggle_breakpoint()<CR>",
+            desc = "Toggle breakpoint",
+        },
+        {
+            "<leader>dB",
+            "<cmd>lua require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>",
+            desc = "Set breakpoint with condition",
+        },
+        {
+            "<leader>dl",
+            "<cmd>lua require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>",
+            desc = "Set log point",
+        },
         { "<leader>do", "<cmd>lua require('dap').step_over()<CR>", desc = "Step over" },
         { "<leader>di", "<cmd>lua require('dap').step_into()<CR>", desc = "Step into" },
         { "<leader>du", "<cmd>lua require('dap').step_out()<CR>", desc = "Step out" },
@@ -21,7 +33,10 @@ return {
         dap.adapters.node2 = {
             type = "executable",
             command = "node",
-            args = { os.getenv("HOME") .. "/.local/share/nvim/dapinstall/jsnode_dbg/vscode-react-native/extension/dist/debugger.bundle.js" },
+            args = {
+                os.getenv("HOME")
+                    .. "/.local/share/nvim/dapinstall/jsnode_dbg/vscode-react-native/extension/dist/debugger.bundle.js",
+            },
         }
     end,
 }

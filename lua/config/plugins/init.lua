@@ -1,5 +1,5 @@
 return {
-    { dir = "~/code/personal/nvim-routine" },
+    { dir = "~/code/personal/solid.nvim" },
     {
         "loctvl842/monokai-pro.nvim",
         enabled = false,
@@ -27,6 +27,7 @@ return {
                 styles = {
                     variables = {},
                     conditionals = { "bold" },
+                    comments = { "italic" },
                     types = {},
                     keywords = { "bold" },
                 },
@@ -56,13 +57,14 @@ return {
                         IlluminatedWordText = { bg = colors.surface0 },
                         IlluminatedWordRead = { bg = colors.surface0 },
                         IlluminatedWordWrite = { bg = colors.surface0 },
+                        CopilotSuggestion = { fg = colors.surface1, bg = colors.mantle },
                     }
                 end,
                 integrations = {
                     cmp = true,
                     gitsigns = true,
                     nvimtree = true,
-                    telescope = true,
+                    telescope = false,
                     notify = true,
                     mini = true,
                     mason = true,

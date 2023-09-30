@@ -56,10 +56,6 @@ return {
                 --     return vim.api.nvim_buf_line_count(bufnr) > 2000
                 -- end,
             },
-            refactor = {
-                highlight_definitions = { enable = false },
-                highlight_current_scope = { enable = false },
-            },
             -- tree_docs = { enable = true },
             incremental_selection = {
                 enable = true,
@@ -91,11 +87,11 @@ return {
                     },
                 },
             },
-            autotag = { enable = true },
+            autotag = { enable = false },
             context_commentstring = { enable = true },
             indent = { enable = true },
             playground = {
-                enable = true,
+                enable = false,
                 updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
                 persist_queries = true, -- Whether the query persists across vim sessions
             },

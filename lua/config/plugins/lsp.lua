@@ -5,7 +5,7 @@ local M = {
         {
             "williamboman/mason-lspconfig.nvim",
             opts = {
-                ensure_installed = { "lua_ls", "tsserver", "jsonls", "eslint" },
+                ensure_installed = { "lua_ls", "tsserver", "jsonls" },
             },
             config = true,
             dependencies = {
@@ -64,7 +64,7 @@ local mappings = function(client, bufnr)
             source = "always",
             max_width = 120,
             focusable = false,
-            border = "rounded",
+            border = "single",
             header = "Line Diagnostics:",
         })
     end
@@ -248,7 +248,6 @@ M.config = function()
                 },
             },
         },
-        eslint = { flags = { debounce_text_changes = 500 } },
     }
 
     require("mason-lspconfig").setup_handlers({
@@ -257,6 +256,9 @@ M.config = function()
                 on_attach = on_attach,
                 capabilities = cmp_nvim_lsp.default_capabilities(),
             }
+            if server_name == "eslint" then
+                return
+            end
 
             if server_name == "jsonls" then
                 opts.capabilities.textDocument.completion.completionItem.snippetSupport = true

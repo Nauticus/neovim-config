@@ -62,7 +62,11 @@ return {
     {
         "zbirenbaum/neodim",
         event = "LspAttach",
-        config = true,
+        config = function()
+            require("neodim").setup({
+                alpha = 0.5,
+            })
+        end,
     },
     { "ThePrimeagen/vim-be-good", cmd = "VimBeGood" },
 }

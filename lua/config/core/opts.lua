@@ -17,6 +17,7 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.scrolloff = 4
 vim.opt.mouse = "a"
+vim.opt.mousemoveevent = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.smarttab = true
@@ -63,7 +64,7 @@ vim.opt.fillchars:append({
     vertleft = "┨",
     vertright = "┣",
     verthoriz = "╋",
-    diff = "╱"
+    diff = "╱",
 })
 vim.opt.inccommand = "split"
 vim.opt.splitkeep = "cursor"

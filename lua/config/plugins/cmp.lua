@@ -1,4 +1,4 @@
----@diagnostic disable: assign-type-mismatch
+---@diagnostic disable: missing-fields
 
 return {
     "hrsh7th/nvim-cmp",
@@ -84,7 +84,7 @@ return {
                 {
                     name = "nvim_lsp",
                     priority_weight = 9,
-                    entry_filter = function(entry, ctx)
+                    entry_filter = function(entry)
                         return require("cmp.types").lsp.CompletionItemKind[entry:get_kind()]
                             ~= "Text"
                     end,
