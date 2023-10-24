@@ -32,11 +32,10 @@ return {
         build = function()
             vim.fn["mkdp#util#install"]()
         end,
+        config = function()
+            vim.g.mkdp_auto_close = 0
+        end,
         ft = "markdown",
-    },
-    {
-        "anuvyklack/pretty-fold.nvim",
-        config = true,
     },
     {
         "numToStr/Comment.nvim",
@@ -56,15 +55,6 @@ return {
                     return require("ts_context_commentstring.internal").calculate_commentstring()
                 end,
                 padding = true,
-            })
-        end,
-    },
-    {
-        "zbirenbaum/neodim",
-        event = "LspAttach",
-        config = function()
-            require("neodim").setup({
-                alpha = 0.5,
             })
         end,
     },

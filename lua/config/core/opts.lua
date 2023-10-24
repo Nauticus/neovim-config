@@ -72,9 +72,20 @@ vim.opt.laststatus = 3
 vim.opt.cmdheight = 1
 vim.opt.showcmd = false
 vim.opt.foldenable = true
-vim.opt.foldcolumn = "1"
+vim.opt.foldcolumn = "0"
 vim.opt.foldlevelstart = 99
--- vim.opt.statuscolumn = "%s %=%{&nu?(&rnu&&v:relnum?v:relnum:v:lnum):''} %#GutterSep#▏%*%T"
+if vim.fn.exists("&statuscolumn") == 1 then
+    vim.opt.statuscolumn = vim.fn.join({
+        -- signs
+        "%s",
+        -- line number
+        '%=%{&nu&&(!v:virtnum)? (&rnu&&(v:relnum) ? v:relnum : v:lnum." ") : ""} ',
+        -- fold
+        "%C%",
+        -- space
+        '#Normal#%{&nu? " " : ""}',
+    }, "")
+end
 if vim.g.started_by_firenvim then
     vim.opt.guifont = "monospace:h18"
     vim.opt.laststatus = 0

@@ -1,6 +1,5 @@
 return {
     "folke/which-key.nvim",
-    version = "1.4.3",
     enabled = true,
     opts = {
         plugins = {

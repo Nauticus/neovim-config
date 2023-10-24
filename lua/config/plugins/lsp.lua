@@ -91,12 +91,6 @@ local mappings = function(client, bufnr)
     end
     if capabilities.signatureHelpProvider then
         keymap.set(
-            "n",
-            "gs",
-            vim.lsp.buf.signature_help,
-            { desc = "Show signature help", buffer = bufnr }
-        )
-        keymap.set(
             "i",
             "<C-s>",
             vim.lsp.buf.signature_help,
@@ -271,10 +265,6 @@ M.config = function()
             require("lspconfig")[server_name].setup(opts)
         end,
         ["tsserver"] = function()
-            local mason_registry = require("mason-registry")
-            local tsserver_path =
-                mason_registry.get_package("typescript-language-server"):get_install_path()
-
             require("typescript-tools").setup({
                 on_attach = function(client, bufnr)
                     client.server_capabilities.documentFormattingProvider = false
@@ -283,7 +273,6 @@ M.config = function()
                 end,
                 capabilities = cmp_nvim_lsp.default_capabilities(),
                 settings = {
-                    tsserver_path = tsserver_path .. "/node_modules/typescript/lib/tsserver.js",
                     tsserver_file_preferences = {
                         includeInlayParameterNameHints = "all",
                         includeCompletionsForModuleExports = true,
