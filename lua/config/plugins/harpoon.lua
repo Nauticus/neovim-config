@@ -1,40 +1,50 @@
 return {
     "ThePrimeagen/harpoon",
+    branch = "harpoon2",
     keys = {
         {
             "[h",
             function()
-                require("harpoon.ui").nav_prev()
+                require("harpoon"):list():prev()
             end,
             desc = "Previous mark (Harpoon)",
         },
         {
             "]h",
             function()
-                require("harpoon.ui").nav_next()
+                require("harpoon"):list():next()
             end,
             desc = "Next mark (Harpoon)",
         },
         {
             "<leader>hh",
             function()
-                require("harpoon.ui").toggle_quick_menu()
+                local harpoon = require("harpoon")
+                harpoon.ui:toggle_quick_menu(harpoon:list())
             end,
             desc = "Toggle Harpoon UI",
         },
         {
             "<leader>ha",
             function()
-                require("harpoon.mark").add_file()
+                require("harpoon"):list():append()
             end,
             desc = "Mark file",
         },
+        {
+            "gh",
+            function()
+                local count = vim.v.count
+                require("harpoon"):list():select(count)
+            end,
+            desc = "Go to marked file"
+        }
     },
     opts = {
-        menu = {
-            width = 90,
-            height = 20,
-        },
+        settings = {
+            save_on_toggle = true,
+            sync_on_ui_close = true,
+        }
     },
     dependencies = {
         "nvim-lua/plenary.nvim",

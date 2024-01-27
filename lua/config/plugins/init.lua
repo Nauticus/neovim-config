@@ -33,6 +33,7 @@ return {
                 },
                 custom_highlights = function(colors)
                     return {
+                        CursorLine = { blend = 90},
                         OilDir = { fg = colors.blue },
                         GutterSep = { fg = colors.base },
                         MatchParen = { bg = colors.surface0, bold = true },

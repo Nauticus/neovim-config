@@ -13,7 +13,6 @@ return {
         "hrsh7th/cmp-nvim-lua",
         "lukas-reineke/cmp-under-comparator",
         "hrsh7th/cmp-cmdline",
-        "windwp/nvim-autopairs",
     },
     config = function()
         local cmp = require("cmp")

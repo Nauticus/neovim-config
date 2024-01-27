@@ -12,7 +12,6 @@ return {
     dependencies = {
         "nvim-treesitter/nvim-treesitter-textobjects",
         "nvim-treesitter/nvim-treesitter-refactor",
-        "JoosepAlviste/nvim-ts-context-commentstring",
         "nvim-treesitter/playground",
         "nvim-treesitter/completion-treesitter",
         "windwp/nvim-ts-autotag",
@@ -93,7 +92,6 @@ return {
                 },
             },
             autotag = { enable = false },
-            context_commentstring = { enable = true },
             indent = { enable = true },
             playground = {
                 enable = false,

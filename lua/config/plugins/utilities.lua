@@ -38,6 +38,14 @@ return {
         ft = "markdown",
     },
     {
+        "JoosepAlviste/nvim-ts-context-commentstring",
+        config = function()
+            require("ts_context_commentstring").setup({
+                enable_autocmd = false,
+            })
+        end,
+    },
+    {
         "numToStr/Comment.nvim",
         keys = {
             { "gcc", mode = "n", desc = "Comment toggle current line" },
@@ -47,14 +55,11 @@ return {
             { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
             { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
         },
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        lazy = false,
         config = function()
             require("Comment").setup({
-                pre_hook = function(ctx)
-                    ---@diagnostic disable-next-line: return-type-mismatch
-                    return require("ts_context_commentstring.internal").calculate_commentstring()
-                end,
                 padding = true,
+                pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
             })
         end,
     },

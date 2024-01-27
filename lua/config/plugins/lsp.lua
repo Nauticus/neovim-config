@@ -185,7 +185,7 @@ local mappings = function(client, bufnr)
     )
     keymap.set("n", "<leader>lwl", list_workspaces, { desc = "List workspace folders" })
     keymap.set("n", [[\lh]], function()
-        vim.lsp.inlay_hint(bufnr, nil)
+        vim.lsp.inlay_hint.enable(bufnr, not vim.lsp.inlay_hint.is_enabled(bufnr))
     end, { desc = "Toggle inlay hints" })
 end
 
@@ -212,7 +212,7 @@ M.config = function()
             local bufnr = args.buf
             local client = vim.lsp.get_client_by_id(args.data.client_id)
             if client and client.supports_method("textDocument/inlayHint") then
-                vim.lsp.inlay_hint(bufnr, false)
+                vim.lsp.inlay_hint.enable(bufnr, false)
             end
         end,
         group = group_name,
