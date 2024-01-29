@@ -22,7 +22,6 @@ return {
 
         local foldmethod_backups = {}
         local foldexpr_backups = {}
-        local foldtext_backups = {}
 
         vim.treesitter.language.register("bash", "zsh")
 
@@ -33,18 +32,14 @@ return {
                     -- Fold settings are actually window based...
                     foldmethod_backups[bufnr] = vim.wo.foldmethod
                     foldexpr_backups[bufnr] = vim.wo.foldexpr
-                    foldtext_backups[bufnr] = vim.wo.foldtext
                     vim.wo.foldmethod = "expr"
                     vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-                    vim.wo.foldtext = "v:lua.vim.treesitter.foldtext()"
                 end,
                 detach = function(bufnr)
                     vim.wo.foldmethod = foldmethod_backups[bufnr]
                     vim.wo.foldexpr = foldexpr_backups[bufnr]
-                    vim.wo.foldtext = foldtext_backups[bufnr]
                     foldmethod_backups[bufnr] = nil
                     foldexpr_backups[bufnr] = nil
-                    foldtext_backups[bufnr] = nil
                 end,
                 is_supported = query.has_folds,
             },

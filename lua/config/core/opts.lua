@@ -3,8 +3,14 @@ vim.g.loaded_netrwPlugin = 1
 
 vim.opt.termguicolors = true
 vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
-vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor1,a:blinkwait0-blinkon400-blinkoff300"
-vim.opt.diffopt = vim.o.diffopt .. ",algorithm:patience,linematch:60"
+vim.opt.diffopt:append({
+    "vertical",
+    "algorithm:patience",
+    "linematch:80",
+    "iwhiteall",
+    "hiddenoff",
+    "indent-heuristic",
+})
 vim.opt.updatetime = 700
 vim.opt.timeoutlen = 500
 vim.opt.clipboard = "unnamedplus"
@@ -27,7 +33,7 @@ vim.opt.signcolumn = "yes:2"
 vim.opt.numberwidth = 4
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 vim.opt.breakindent = false
 vim.opt.linebreak = false
 vim.opt.wrap = false
@@ -58,7 +64,7 @@ vim.opt.fillchars:append({
     horizup = "┻",
     horizdown = "┳",
     vert = "┃",
-    fold = " ",
+    fold = "⋅",
     foldsep = " ",
     foldclose = "+",
     foldopen = "−",
@@ -67,6 +73,7 @@ vim.opt.fillchars:append({
     verthoriz = "╋",
     diff = "╱",
 })
+vim.opt.foldtext = ""
 vim.opt.inccommand = "split"
 vim.opt.splitkeep = "cursor"
 vim.opt.laststatus = 3
@@ -75,18 +82,7 @@ vim.opt.showcmd = false
 vim.opt.foldenable = true
 vim.opt.foldcolumn = "0"
 vim.opt.foldlevelstart = 99
-if vim.fn.exists("&statuscolumn") == 1 then
-    vim.opt.statuscolumn = vim.fn.join({
-        -- signs
-        "%s",
-        -- line number
-        '%=%{&nu&&(!v:virtnum)? (&rnu&&(v:relnum) ? v:relnum : v:lnum." ") : ""} ',
-        -- fold
-        "%C%",
-        -- space
-        '#Normal#%{&nu? " " : ""}',
-    }, "")
-end
+
 if vim.g.started_by_firenvim then
     vim.opt.guifont = "monospace:h18"
     vim.opt.laststatus = 0
