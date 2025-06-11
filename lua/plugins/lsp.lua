@@ -1,11 +1,12 @@
 local M = {
     "neovim/nvim-lspconfig",
+    enabled = false,
     event = "BufReadPre",
     dependencies = {
         {
             "williamboman/mason-lspconfig.nvim",
             opts = {
-                ensure_installed = { "lua_ls", "tsserver", "jsonls" },
+                ensure_installed = { "lua_ls", "ts_ls", "jsonls" },
             },
             config = true,
             dependencies = {
@@ -22,10 +23,6 @@ local M = {
         "b0o/schemastore.nvim",
         "folke/neodev.nvim",
         {
-            "pmizio/typescript-tools.nvim",
-            dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-        },
-        {
             "folke/trouble.nvim",
             cmd = { "TroubleToggle", "Trouble" },
             dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -35,10 +32,10 @@ local M = {
 }
 -- set signs for diagnostics
 local signs = {
-    Error = " ",
-    Warn = " ",
-    Hint = " ",
-    Info = " ",
+    Error = " ",
+    Warn = " ",
+    Hint = " ",
+    Info = " ",
 }
 
 for type, icon in pairs(signs) do
@@ -49,7 +46,7 @@ end
 vim.diagnostic.config({
     float = {
         border = "single",
-        source = "always",
+        source = "if_many",
     },
 })
 
@@ -61,7 +58,7 @@ local mappings = function(client, bufnr)
     local show_line_diagnostics = function()
         vim.diagnostic.open_float({
             scope = "line",
-            source = "always",
+            source = "if_many",
             max_width = 120,
             focusable = false,
             border = "single",
@@ -185,7 +182,7 @@ local mappings = function(client, bufnr)
     )
     keymap.set("n", "<leader>lwl", list_workspaces, { desc = "List workspace folders" })
     keymap.set("n", [[\lh]], function()
-        vim.lsp.inlay_hint.enable(bufnr, not vim.lsp.inlay_hint.is_enabled(bufnr))
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(bufnr))
     end, { desc = "Toggle inlay hints" })
 end
 
@@ -209,10 +206,9 @@ M.config = function()
 
     vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
-            local bufnr = args.buf
             local client = vim.lsp.get_client_by_id(args.data.client_id)
             if client and client.supports_method("textDocument/inlayHint") then
-                vim.lsp.inlay_hint.enable(bufnr, false)
+                vim.lsp.inlay_hint.enable(false)
             end
         end,
         group = group_name,
@@ -264,19 +260,23 @@ M.config = function()
 
             require("lspconfig")[server_name].setup(opts)
         end,
-        ["tsserver"] = function()
-            require("typescript-tools").setup({
-                on_attach = function(client, bufnr)
-                    client.server_capabilities.documentFormattingProvider = false
-                    client.server_capabilities.documentRangeFormattingProvider = false
-                    on_attach(client, bufnr)
-                end,
-                capabilities = cmp_nvim_lsp.default_capabilities(),
+        ["cssls"] = function()
+            require("lspconfig").cssls.setup({
                 settings = {
-                    tsserver_file_preferences = {
-                        includeInlayParameterNameHints = "all",
-                        includeCompletionsForModuleExports = true,
-                        quotePreference = "auto",
+                    css = {
+                        lint = {
+                            unknownAtRules = "ignore",
+                        },
+                    },
+                    scss = {
+                        lint = {
+                            unknownAtRules = "ignore",
+                        },
+                    },
+                    less = {
+                        lint = {
+                            unknownAtRules = "ignore",
+                        },
                     },
                 },
             })

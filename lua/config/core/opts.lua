@@ -13,11 +13,14 @@ vim.opt.diffopt:append({
 })
 vim.opt.updatetime = 700
 vim.opt.timeoutlen = 500
-vim.opt.clipboard = "unnamedplus"
+
+vim.schedule(function ()
+    vim.opt.clipboard = "unnamedplus"
+end)
+
+vim.opt.winborder = "single"
 vim.opt.completeopt = "menu,menuone,noselect,noinsert"
 vim.opt.wildoptions = "pum"
-vim.opt.pumblend = 10
-vim.opt.winblend = 5
 vim.opt.pumheight = 15
 vim.opt.hidden = true
 vim.opt.splitright = true
@@ -38,13 +41,16 @@ vim.opt.breakindent = false
 vim.opt.linebreak = false
 vim.opt.wrap = false
 vim.opt.cpo:append("n_")
-vim.opt.list = true
+vim.opt.list = false
 
 vim.opt.listchars:append({
     extends = "…",
     precedes = "…",
     nbsp = "␣",
-    -- eol = "↲",
+    eol = "↲",
+    tab = "» ",
+    trail = "·",
+    lead = "·",
 })
 
 vim.opt.showmode = false

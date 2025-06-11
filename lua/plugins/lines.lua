@@ -29,12 +29,7 @@ return {
                 globalstatus = true,
             },
             sections = {
-                lualine_a = { {
-                    "mode",
-                    fmt = function(str)
-                        return str:sub(1, 1):upper()
-                    end
-                } },
+                lualine_a = {},
                 lualine_b = {
                     { "filetype", icon_only = true },
                     { "filename", path = 1,        file_status = true, shorting_target = 50 },

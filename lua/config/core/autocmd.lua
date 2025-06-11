@@ -36,11 +36,11 @@ autocmd("FileType", {
     command = "setlocal foldmethod=syntax foldlevel=0",
 })
 
-autocmd("TextYankPost", {
-    desc = "Highlight region on yank.",
-    group = "HighlightYank",
-    command = "silent! lua vim.highlight.on_yank() {higroup='IncSearch', timeout=800}",
-})
+-- autocmd("TextYankPost", {
+--     desc = "Highlight region on yank.",
+--     group = "HighlightYank",
+--     command = "silent! lua vim.highlight.on_yank() {higroup='IncSearch', timeout=800}",
+-- })
 
 autocmd({ "BufNewFile", "BufRead" }, {
     pattern = "*.keymap",

@@ -13,7 +13,6 @@ return {
     },
     opts = {
         columns = {},
-        lsp_rename_autosave = true,
         keymaps = {
             ["g?"] = "actions.show_help",
             ["<CR>"] = "actions.select",
@@ -30,6 +29,10 @@ return {
             ["go"] = "actions.open_external",
         },
         use_default_keymaps = false,
+        lsp_file_methods = {
+            enabled = true,
+            autosave_changes = true,
+        },
         view_options = {
             show_hidden = true,
         },

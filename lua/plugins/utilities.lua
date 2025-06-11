@@ -1,4 +1,11 @@
 return {
+    {
+        "lervag/vimtex",
+        lazy = false,
+        config = function()
+            vim.g.vimtex_view_method = "zathura"
+        end,
+    },
     -- Docs
     { "nanotee/luv-vimdocs", event = "VeryLazy" },
     { "milisims/nvim-luaref", event = "VeryLazy" },
@@ -64,4 +71,9 @@ return {
         end,
     },
     { "ThePrimeagen/vim-be-good", cmd = "VimBeGood" },
+    -- using packer.nvim
+    {
+        'nmac427/guess-indent.nvim',
+        config = function() require('guess-indent').setup {} end,
+    }
 }
