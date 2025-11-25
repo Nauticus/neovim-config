@@ -1,5 +1,6 @@
 return {
     "nvim-treesitter/nvim-treesitter",
+    enabled = true,
     build = ":TSUpdate",
     event = "BufReadPre",
     keys = {
@@ -46,8 +47,22 @@ return {
         })
 
         require("nvim-treesitter.configs").setup({
-            ensure_installed = "all",
+            ensure_installed = {
+                "typescript",
+                "tsx",
+                "javascript",
+                "css",
+                "scss",
+                "json",
+                "toml",
+                "lua",
+                "html",
+                "diff",
+                "gitcommit",
+            },
             ignore_install = { "haskell" },
+            sync_install = true,
+            auto_install = true,
             highlight = {
                 enable = true,
                 additional_vim_regex_highlighting = false,

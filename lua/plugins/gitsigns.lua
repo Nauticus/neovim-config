@@ -23,9 +23,7 @@ function M.config()
             delay = 700,
             ignore_whitespace = true,
         },
-        current_line_blame_formatter_opts = {
-            relative_time = true,
-        },
+        current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
         on_attach = function(bufnr)
             local gs = package.loaded.gitsigns
 
@@ -67,7 +65,7 @@ function M.config()
             map("n", "<leader>gb", function() gs.blame_line({ full = true }) end, { desc = "Blame line" })
 
             map("n", [[\gb]], gs.toggle_current_line_blame, { desc = "Toggle current line blame" })
-            map("n", [[\gd]], gs.toggle_deleted, { desc = "Toggle deleted" })
+            map("n", [[\gd]], gs.preview_hunk_inline, { desc = "Toggle deleted" })
 
             -- Text object
             map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })

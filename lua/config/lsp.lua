@@ -2,6 +2,9 @@ vim.lsp.config("*", {
     root_markers = { '.git' },
 })
 
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.lsp.foldexpr()'
+
 -- Map over lsp runtime files
 local configs = {}
 

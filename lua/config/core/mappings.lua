@@ -17,6 +17,8 @@ keymap.set('n', [[\on]], "<Cmd>set number! number?<CR>", { desc = "Toggle 'numbe
 keymap.set('n', [[\or]], "<Cmd>set relativenumber! relativenumber?<CR>", { desc = "Toggle 'relativenumber'" })
 keymap.set("n", [[\os]], "<Cmd>set spell! spell?<CR>", { desc = "Toggle 'spell'" })
 keymap.set("n", [[\ol]], "<Cmd>set list! list?<CR>", { desc = "Toggle 'list'" })
+keymap.set("n", [[\ob]], "<Cmd>set bri! bri?<CR>", { desc = "Toggle 'breakindent'" })
+keymap.set("n", [[\ow]], "<Cmd>set wrap! wrap?<CR>", { desc = "Toggle 'wrap'" })
 
 keymap.set({ 'n', 'x' }, '[p', '<Cmd>exe "put! " . v:register<CR>', { desc = 'Paste Above' })
 keymap.set({ 'n', 'x' }, ']p', '<Cmd>exe "put "  . v:register<CR>', { desc = 'Paste Below' })

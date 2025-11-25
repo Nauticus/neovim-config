@@ -24,6 +24,7 @@ require("lazy").setup({
     spec = {
         { import = "plugins" },
     },
+    concurrency = 2,
     checker = { enabled = false },
     diff = {
         cmd = "diffview.nvim",

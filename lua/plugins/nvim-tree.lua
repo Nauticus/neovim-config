@@ -5,14 +5,17 @@ return {
         "nvim-tree/nvim-web-devicons",
     },
     keys = {
-        { [[\p]], "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" }
+        { [[\p]], "<CMD>NvimTreeToggle<CR>", desc = "NvimTree" },
     },
     config = function()
         require("nvim-tree").setup({
             view = {
                 relativenumber = true,
                 width = 50,
-            }
+            },
+            git = {
+                enable = false,
+            },
         })
     end,
 }

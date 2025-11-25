@@ -14,7 +14,7 @@ vim.opt.diffopt:append({
 vim.opt.updatetime = 700
 vim.opt.timeoutlen = 500
 
-vim.schedule(function ()
+vim.schedule(function()
     vim.opt.clipboard = "unnamedplus"
 end)
 
@@ -37,21 +37,21 @@ vim.opt.numberwidth = 4
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.cursorline = false
-vim.opt.breakindent = false
-vim.opt.linebreak = false
+vim.opt.breakindent = true
+vim.opt.linebreak = true
 vim.opt.wrap = false
 vim.opt.cpo:append("n_")
 vim.opt.list = false
 
-vim.opt.listchars:append({
-    extends = "…",
-    precedes = "…",
-    nbsp = "␣",
-    eol = "↲",
-    tab = "» ",
-    trail = "·",
-    lead = "·",
-})
+-- vim.opt.listchars:append({
+--     extends = "…",
+--     precedes = "…",
+--     nbsp = "␣",
+--     eol = "↲",
+--     tab = "»",
+--     trail = "·",
+--     lead = "·",
+-- })
 
 vim.opt.showmode = false
 vim.opt.showbreak = "»"

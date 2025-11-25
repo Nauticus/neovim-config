@@ -46,11 +46,22 @@ return {
     },
     {
         "JoosepAlviste/nvim-ts-context-commentstring",
+        lazy = true,
         config = function()
             require("ts_context_commentstring").setup({
                 enable_autocmd = false,
             })
         end,
+    },
+    {
+        "davidmh/mdx.nvim",
+        event = "BufEnter *.mdx",
+        config = true,
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+    },
+    {
+        "jsongerber/nvim-px-to-rem",
+        config = true,
     },
     {
         "numToStr/Comment.nvim",
@@ -62,7 +73,7 @@ return {
             { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
             { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
         },
-        lazy = false,
+        lazy = true,
         config = function()
             require("Comment").setup({
                 padding = true,
@@ -73,7 +84,10 @@ return {
     { "ThePrimeagen/vim-be-good", cmd = "VimBeGood" },
     -- using packer.nvim
     {
-        'nmac427/guess-indent.nvim',
-        config = function() require('guess-indent').setup {} end,
-    }
+        "nmac427/guess-indent.nvim",
+        enabled = false,
+        config = function()
+            require("guess-indent").setup({})
+        end,
+    },
 }

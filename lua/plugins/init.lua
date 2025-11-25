@@ -2,6 +2,7 @@ return {
     {
         "folke/flash.nvim",
         event = "VeryLazy",
+        enabled = false,
         opts = {
             modes = {
                 char = { enabled = false },
@@ -27,6 +28,10 @@ return {
                 flavour = "mocha", -- latte, frappe, macchiato, mocha
                 compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
                 transparent_background = true,
+                float = {
+                    solid = true,
+                    transparent = true
+                },
                 styles = {
                     variables = {},
                     conditionals = { "bold" },
@@ -36,6 +41,7 @@ return {
                 },
                 custom_highlights = function(colors)
                     return {
+                        -- CursorLine = { blend = 90 },
                         -- CursorLine = { blend = 90 },
                         -- OilDir = { fg = colors.blue },
                         -- GutterSep = { fg = colors.base },
@@ -61,7 +67,7 @@ return {
                         -- LineNrBelow = { fg = utils.blend(colors.surface1, colors.blue, 0.7) },
                         -- LineNrAbove = { fg = utils.blend(colors.surface1, colors.green, 0.7) },
                         -- CursorLineNr = { bg = colors.surface0 },
-                        -- -- LineNrBelow = { bg = colors.mauve },
+                        -- LineNrBelow = { bg = colors.mauve },
                     }
                 end,
                 integrations = {
@@ -74,7 +80,7 @@ return {
                     mini = true,
                     mason = true,
                     semantic_tokens = true,
-                    treesitter = true,
+                    treesitter = false,
                     which_key = true,
                     indent_blankline = false,
                     native_lsp = {

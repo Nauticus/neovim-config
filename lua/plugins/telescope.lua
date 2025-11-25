@@ -1,15 +1,10 @@
 local M = {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.2",
-    enabled = false,
+    tag = "0.1.8",
+    enabled = true,
     cmd = "Telescope",
     dependencies = {
-        {
-            "nvim-telescope/telescope-fzf-native.nvim",
-            enabled = true,
-            build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
-        },
-        { "kyoh86/telescope-windows.nvim" },
+        -- { "kyoh86/telescope-windows.nvim" },
         { "nvim-lua/popup.nvim" },
         { "nvim-lua/plenary.nvim" },
         { "nvim-telescope/telescope-ui-select.nvim" },
@@ -20,7 +15,7 @@ local M = {
         {
             "<leader>sf",
             function()
-                require("telescope.builtin").find_files()
+                require("telescope.builtin").find_files({ hidden = true })
             end,
             desc = "Find files",
         },
@@ -96,48 +91,16 @@ local M = {
     },
 }
 
-local send_to_harpoon_action = function(prompt_bufnr)
-    local actions_state = require("telescope.actions.state")
-    local picker = actions_state.get_current_picker(prompt_bufnr)
-    local ok, mark = pcall(require, "harpoon.mark")
-
-    if not ok then
-        return
-    end
-
-    if #picker:get_multi_selection() < 1 then
-        mark.add_file(picker:get_selection()[1])
-        return
-    end
-
-    for _, entry in ipairs(picker:get_multi_selection()) do
-        mark.add_file(entry[1])
-    end
-end
-
 M.config = function()
     local actions = require("telescope.actions")
     local telescope = require("telescope")
 
     telescope.setup({
         defaults = {
-            vimgrep_arguments = {
-                "rg",
-                "--color=never",
-                "--no-heading",
-                "--with-filename",
-                "--line-number",
-                "--column",
-                "--smart-case",
-                "--hidden",
-                "--trim",
-                "--glob",
-                "!**/{.git,node_modules}",
-            },
             initial_mode = "insert",
-            color_devicons = true,
+            color_devicons = false,
             sorting_strategy = "ascending",
-            set_env = { ["COLORTERM"] = "truecolor" },
+            -- set_env = { ["COLORTERM"] = "truecolor" },
             file_ignore_patterns = { ".git/.*", "node_modules/.*" },
             layout_strategy = "horizontal",
             layout_config = {
@@ -158,16 +121,6 @@ M.config = function()
                 "╯",
                 "╰",
             },
-            -- borderchars = {
-            --     "─",
-            --     "│",
-            --     "─",
-            --     "│",
-            --     "┌",
-            --     "┐",
-            --     "┘",
-            --     "└",
-            -- },
             mappings = {
                 ["i"] = {
                     ["<C-?>"] = actions.which_key, -- keys from pressing <C-/>
@@ -200,14 +153,6 @@ M.config = function()
             find_files = {
                 find_command = { "rg", "--files", "--iglob", "!.git", "--hidden" },
                 hidden = true,
-                mappings = {
-                    n = {
-                        ["<C-h>"] = send_to_harpoon_action,
-                    },
-                    i = {
-                        ["<C-h>"] = send_to_harpoon_action,
-                    },
-                },
             },
             live_grep = {
                 disable_coordinates = true,
@@ -217,21 +162,12 @@ M.config = function()
             ["ui-select"] = {
                 require("telescope.themes").get_dropdown({}),
             },
-            fzf = {
-                fuzzy = true, -- false will only do exact matching
-                override_generic_sorter = true, -- override the generic sorter
-                override_file_sorter = true, -- override the file sorter
-                case_mode = "smart_case", -- or "ignore_case" or "respect_case"
-                -- the default case_mode is "smart_case"
-            },
         },
     })
 
     telescope.load_extension("lazy")
-    telescope.load_extension("fzf")
-    telescope.load_extension("windows")
     telescope.load_extension("ui-select")
-    telescope.load_extension("luasnip")
+    telescope.load_extension('harpoon')
 end
 
 return M

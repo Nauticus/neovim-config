@@ -1,13 +1,13 @@
 local root_markers = {}
 return {
-    cmd = { 'typescript-language-server', '--stdio' },
+    cmd = { "typescript-language-server", "--stdio" },
     filetypes = {
-        'javascript',
-        'javascriptreact',
-        'javascript.jsx',
-        'typescript',
-        'typescriptreact',
-        'typescript.tsx',
+        "javascript",
+        "javascriptreact",
+        "javascript.jsx",
+        "typescript",
+        "typescriptreact",
+        "typescript.tsx",
     },
     init_options = {
         hostInfo = "neovim",

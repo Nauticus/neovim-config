@@ -37,15 +37,10 @@ return {
                 local count = vim.v.count
                 require("harpoon"):list():select(count)
             end,
-            desc = "Go to marked file"
-        }
+            desc = "Go to marked file",
+        },
     },
-    opts = {
-        settings = {
-            save_on_toggle = true,
-            sync_on_ui_close = true,
-        }
-    },
+    opts = {},
     dependencies = {
         "nvim-lua/plenary.nvim",
     },
