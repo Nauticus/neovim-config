@@ -44,19 +44,13 @@ return {
                 },
                 lualine_y = {
                     {
-                        "diff",
-                        symbols = { added = "+", modified = "~", removed = "−" },
-                        colored = true,
-                        padding = { left = 1, right = 1 },
-                    },
-                    {
                         "progress",
                     },
                     {
                         "location",
                     },
                 },
-                lualine_z = { "branch" },
+                lualine_z = {},
             },
             extensions = { "quickfix", "fugitive" },
             inactive_sections = {

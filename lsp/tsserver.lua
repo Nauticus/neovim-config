@@ -1,6 +1,6 @@
 local root_markers = {}
 return {
-    cmd = { "typescript-language-server", "--stdio" },
+    -- cmd = { "typescript-language-server", "--stdio" },
     filetypes = {
         "javascript",
         "javascriptreact",

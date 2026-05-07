@@ -12,7 +12,7 @@
 
 ---@type vim.lsp.Config
 return {
-  cmd = { 'css-variables-language-server', '--stdio' },
+  -- cmd = { 'css-variables-language-server', '--stdio' },
   filetypes = { 'css', 'scss', 'less' },
 
   -- Taken from lsp/ts_ls.lua to handle simple projects and monorepos.

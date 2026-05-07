@@ -1,6 +1,7 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- vim.opt.fsync = false
 vim.opt.termguicolors = true
 vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
 vim.opt.diffopt:append({
