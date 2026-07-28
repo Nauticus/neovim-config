@@ -1,5 +1,8 @@
 local keymap = vim.keymap
 
+-- Disable F15 globally (prevents waking machine from sleep)
+keymap.set({ 'n', 'i', 'v', 'x', 's', 'o', 'c' }, '<F15>', '<Nop>', { desc = 'Noop (F15 disabled)' })
+
 -- GLOBAL MAPPINGS
 keymap.set("i", "<C-h>", "<BS>", { desc = "Backspace" })
 
