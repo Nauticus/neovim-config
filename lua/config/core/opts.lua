@@ -7,17 +7,14 @@ vim.opt.guifont = "JetBrainsMono Nerd Font:h12"
 vim.opt.diffopt:append({
     "vertical",
     "algorithm:patience",
-    "linematch:80",
-    "iwhiteall",
-    "hiddenoff",
-    "indent-heuristic",
+    "linematch:60",
 })
 vim.opt.updatetime = 700
 vim.opt.timeoutlen = 500
 
-vim.schedule(function()
+if vim.has("clipboard") then
     vim.opt.clipboard = "unnamedplus"
-end)
+end
 
 vim.opt.winborder = "single"
 vim.opt.completeopt = "menu,menuone,noselect,noinsert"
@@ -28,7 +25,7 @@ vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.scrolloff = 4
 vim.opt.mouse = "a"
-vim.opt.mousemoveevent = true
+vim.opt.mousemoveevent = false
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.smarttab = true
@@ -43,16 +40,6 @@ vim.opt.linebreak = true
 vim.opt.wrap = false
 vim.opt.cpo:append("n_")
 vim.opt.list = false
-
--- vim.opt.listchars:append({
---     extends = "…",
---     precedes = "…",
---     nbsp = "␣",
---     eol = "↲",
---     tab = "»",
---     trail = "·",
---     lead = "·",
--- })
 
 vim.opt.showmode = false
 vim.opt.showbreak = "»"
