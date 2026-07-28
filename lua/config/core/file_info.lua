@@ -1,9 +1,26 @@
 --- Module that gathers orientation information about the current buffer.
 local M = {}
 
---- Build a summary of the current buffer.
--- Returns a two-line string: a metadata line and the current line contents.
--- @return string formatted info
+--- Escape HTML special characters in a string.
+local function html_escape(s)
+    local result = s:gsub("&", "&amp;")
+        :gsub("<", "&lt;")
+        :gsub(">", "&gt;")
+        :gsub('"', "&quot;")
+    return result
+end
+
+--- Wrap lines in `<br>`-separated `<code>` for Teams-compatible HTML.
+local function code_block(lines)
+    local escaped = {}
+    for _, line in ipairs(lines) do
+        table.insert(escaped, html_escape(line))
+    end
+    return table.concat(escaped, "<br>")
+end
+
+--- Build a summary of the current buffer as Teams-compatible HTML.
+-- @return string HTML formatted info
 function M.build()
     local path = vim.fn.expand("%:.") -- path relative to cwd
     if path == "%" or path == "" then
@@ -29,13 +46,13 @@ function M.build()
     local ft = vim.bo.filetype or ""
     local lang = ft ~= "" and string.format("[%s] ", ft) or ""
     local meta = string.format("%s | L%d:C%d | %s | %s%s", path, line, col, branch, lang, diff)
-    return string.format("%s\n%s", meta, line_text)
+    return string.format("<code>%s<br>%s</code>", html_escape(meta), html_escape(line_text))
 end
 
---- Build info for a visual selection (range of lines).
+--- Build info for a visual selection (range of lines) as Teams-compatible HTML.
 -- @param range_start line number of selection start (1-based)
 -- @param range_end line number of selection end (1-based)
--- @return string formatted info
+-- @return string HTML formatted info
 function M.build_selection(range_start, range_end)
     local path = vim.fn.expand("%:.")
     if path == "%" or path == "" then
@@ -55,7 +72,6 @@ function M.build_selection(range_start, range_end)
     end
 
     local selected_lines = vim.fn.getline(range_start, range_end)
-    local line_text = table.concat(selected_lines, "\n")
     local line_count = #selected_lines
 
     local ft = vim.bo.filetype or ""
@@ -66,7 +82,7 @@ function M.build_selection(range_start, range_end)
     else
         meta = string.format("%s | L%d-L%d (%d lines) | %s | %s%s", path, range_start, range_end, line_count, branch, lang, diff)
     end
-    return string.format("%s\n%s", meta, line_text)
+    return string.format("<code>%s<br>%s</code>", html_escape(meta), code_block(selected_lines))
 end
 
 --- Copy the info string to all registers and show a notification.
