@@ -1,65 +1,5 @@
 return {
     {
-        "lervag/vimtex",
-        lazy = false,
-        config = function()
-            vim.g.vimtex_view_method = "zathura"
-        end,
-    },
-    -- Docs
-    { "nanotee/luv-vimdocs", event = "VeryLazy" },
-    { "milisims/nvim-luaref", event = "VeryLazy" },
-    { "Asheq/close-buffers.vim", cmd = "Bdelete" },
-
-    {
-        "mbbill/undotree",
-        cmd = "UndotreeToggle",
-        keys = {
-            { [[\u]], ":UndotreeToggle<CR>", desc = "Undotree" },
-        },
-        config = function()
-            vim.g.undotree_WindowLayout = 2
-            vim.g.undotree_SetFocusWhenToggle = 1
-            vim.g.undotree_SplitWidth = 35
-        end,
-    },
-    {
-        "norcalli/nvim-colorizer.lua",
-        cmd = { "ColorizerToggle", "ColorizerAttachToBuffer" },
-        keys = {
-            { [[\c]], "<CMD>ColorizerToggle<CR>", desc = "Colorizer" },
-        },
-        opts = {
-            scss = { rgb_fn = true },
-            css = { rgb_fn = true },
-        },
-    },
-    {
-        "iamcco/markdown-preview.nvim",
-        build = function()
-            vim.fn["mkdp#util#install"]()
-        end,
-        config = function()
-            vim.g.mkdp_auto_close = 0
-        end,
-        ft = "markdown",
-    },
-    {
-        "JoosepAlviste/nvim-ts-context-commentstring",
-        lazy = true,
-        config = function()
-            require("ts_context_commentstring").setup({
-                enable_autocmd = false,
-            })
-        end,
-    },
-    {
-        "davidmh/mdx.nvim",
-        event = "BufEnter *.mdx",
-        config = true,
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
-    },
-    {
         "jsongerber/nvim-px-to-rem",
         config = true,
     },
@@ -77,16 +17,7 @@ return {
         config = function()
             require("Comment").setup({
                 padding = true,
-                pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
             })
-        end,
-    },
-    { "ThePrimeagen/vim-be-good", cmd = "VimBeGood" },
-    -- using packer.nvim
-    {
-        "olrtg/nvim-emmet",
-        config = function()
-            vim.keymap.set({ "n", "v" }, "<leader>xe", require("nvim-emmet").wrap_with_abbreviation)
         end,
     },
 }
