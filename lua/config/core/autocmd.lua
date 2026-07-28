@@ -28,12 +28,7 @@ autocmd("FileType", {
     command = "setlocal foldmethod=syntax foldlevel=0",
 })
 
--- autocmd("TextYankPost", {
---     desc = "Highlight region on yank.",
---     group = "HighlightYank",
---     command = "silent! lua vim.highlight.on_yank() {higroup='IncSearch', timeout=800}",
--- })
-
+-- QMK keymaps for custom keyboards — treat as DTS (device tree) syntax
 autocmd({ "BufNewFile", "BufRead" }, {
     pattern = "*.keymap",
     group = "KeymapSyntax",
@@ -42,19 +37,19 @@ autocmd({ "BufNewFile", "BufRead" }, {
 
 -- set yaml.ansible file type based on search match
 autocmd({ "BufRead" }, {
-  pattern = { "*.yaml", "*.yml" },
-  callback = function()
-    if vim.fn.search([[tasks:\|- name:]], "nw") > 0 then
-      vim.opt_local.ft = "yaml.ansible"
-    end
-  end,
+    pattern = { "*.yaml", "*.yml" },
+    callback = function()
+        if vim.fn.search([[tasks:\|- name:]], "nw") > 0 then
+            vim.opt_local.ft = "yaml.ansible"
+        end
+    end,
 })
 
 autocmd({ "BufRead", "BufNewFile" }, {
-  pattern = { "*/playbooks/*.yml", "*/tasks/*.yml" },
-  callback = function()
-    vim.opt_local.ft = "yaml.ansible"
-  end,
+    pattern = { "*/playbooks/*.yml", "*/tasks/*.yml" },
+    callback = function()
+        vim.opt_local.ft = "yaml.ansible"
+    end,
 })
 
 -- Windows: ensure all LSP servers and child processes are killed on exit.
@@ -63,10 +58,10 @@ autocmd({ "BufRead", "BufNewFile" }, {
 -- See: https://github.com/neovim/neovim/issues/29475
 -- See: https://github.com/neovim/neovim/issues/14428
 autocmd("VimLeavePre", {
-  desc = "Kill all LSP clients on exit (Windows orphan process mitigation)",
-  callback = function()
-    for _, client in ipairs(vim.lsp.get_active_clients()) do
-      client.stop()
-    end
-  end,
+    desc = "Kill all LSP clients on exit (Windows orphan process mitigation)",
+    callback = function()
+        for _, client in ipairs(vim.lsp.get_active_clients()) do
+            client.stop()
+        end
+    end,
 })
