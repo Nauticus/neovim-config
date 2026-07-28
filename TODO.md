@@ -23,8 +23,8 @@ Two entries bind `<leader>sw` — one normal mode (`grep_string`), one visual mo
 
 Neovim uses LuaJIT, not Lua 5.1. While mostly compatible, the correct Stylua setting is `syntax = "LuaJIT"` (or omit for `"All"`).
 
-- **Status:** open
-- **Decision:** Lets fix this.
+- **Status:** done ✅
+- **Decision:** Lets fix this. Changed to `syntax = "LuaJIT"`.
 
 ---
 
@@ -47,8 +47,10 @@ Pinning to a raw commit means lazy.nvim will never update it. Pin to a tag/versi
 
 `lazydev.nvim` has `integrations.cmp = false`, so cmp won't get LSP completions from lazydev. And `lua_ls` doesn't set `settings.Lua.workspace.library` to point at Neovim's runtime. Neither LSP can auto-complete Neovim API types into cmp.
 
-- **Status:** open
+- **Status:** done ✅
 - **Decision:** Lets investigate this. I want to have LSP completions for Neovim API types in cmp.
+  Fixed by setting `integrations.cmp = true` in lazydev and adding `lazydev` as a cmp source (priority 900).
+  Per lazydev docs, Neovim types are included by default on Neovim >= 0.10, so no `workspace.library` needed on lua_ls.
 
 ---
 
@@ -58,8 +60,9 @@ Pinning to a raw commit means lazy.nvim will never update it. Pin to a tag/versi
 
 `vim.o.foldmethod = "expr"` and `vim.o.foldexpr = "v:lua.vim.lsp.foldexpr()"` are set unconditionally. If LSP isn't attached yet or doesn't support folding, this degrades the fold experience.
 
-- **Status:** open
+- **Status:** done ✅
 - **Decision:** Please read the documentation for `vim.lsp.foldexpr()` and see if it is safe to call when no LSP is attached. If not, we should move this into an `LspAttach` autocmd.
+  Fixed: global default is now `vim.treesitter.foldexpr()`. LSP folding is set per-window on `LspAttach` only when the client supports `textDocument/foldingRange` (per `:h vim.lsp.foldexpr()` recommendation).
 
 ---
 
@@ -82,8 +85,8 @@ Catppuccin has `indent_blankline = false` in integrations. No `indent-blankline.
 
 `cmp.setup.cmdline(":", ...)` only has `{ name = "path" }`. No `cmp-cmdline` source, so command name completion in `:` is missing.
 
-- **Status:** open
-- **Decision:** Lets fix this.
+- **Status:** done ✅
+- **Decision:** Lets fix this. Added `hrsh7th/cmp-cmdline` as a dependency and wired `cmdline` source into `:` completion.
 
 ---
 
@@ -106,8 +109,8 @@ Both provide file browsing. nvim-tree is a sidebar file explorer; oil replaces t
 
 `integrations.notify = true` is set but no `nvim-notify` (or similar) plugin is loaded. Catppuccin will silently skip the integration and vim.notify uses the basic built-in with no UI.
 
-- **Status:** open
-- **Decision:** Lets set this to false. I don't want to use nvim-notify in my config.
+- **Status:** done ✅
+- **Decision:** Lets set this to false. I don't want to use nvim-notify in my config. Changed to `notify = false`.
 
 ---
 
@@ -117,8 +120,9 @@ Both provide file browsing. nvim-tree is a sidebar file explorer; oil replaces t
 
 A temp file sits in the repo. Either rename to `.luarc.json` and commit, or add `*.json.temp` to `.gitignore`.
 
-- **Status:** open
+- **Status:** done ✅
 - **Decision:** I don't know what this file is for.
+  It's a lua-language-server config defining `globals` and `cache` as known globals (for luacheck test stubs). Renamed to `.luarc.json`.
 
 ---
 
