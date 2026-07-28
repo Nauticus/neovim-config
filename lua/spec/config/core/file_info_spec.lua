@@ -133,11 +133,76 @@ describe("file_info", function()
 
             assert.stub(s_setreg).was_called()
             assert.stub(s_notify).was_called()
-            -- verify only valid registers are used
             for _, call in ipairs(s_setreg.calls) do
                 local reg = call.vals[1]
                 assert.is_true(reg == "+" or reg == "", string.format("unexpected register: %s", reg))
             end
+        end)
+    end)
+
+    describe("build_selection", function()
+        it("shows single-line selection without range suffix", function()
+            stub(vim.fn, "expand").returns("file.lua")
+            stub(vim.fn, "getline").returns({ "local x = 1" })
+            vim.b.gitsigns_status_dict = nil
+            vim.bo.filetype = "lua"
+
+            file_info = load_module()
+            local result = file_info.build_selection(5, 5)
+            assert.equals(
+                "`file.lua` | L5 | (no branch) | (unknown)\n```lua\nlocal x = 1\n```",
+                result
+            )
+        end)
+
+        it("shows multi-line selection with range and line count", function()
+            stub(vim.fn, "expand").returns("file.lua")
+            stub(vim.fn, "getline").returns({ "local a = 1", "local b = 2", "local c = 3" })
+            vim.b.gitsigns_status_dict = { head = "main", added = 2, changed = 1, removed = 0 }
+            vim.b.gitsigns_head = "main"
+            vim.bo.filetype = "lua"
+
+            file_info = load_module()
+            local result = file_info.build_selection(10, 12)
+            assert.equals(
+                "`file.lua` | L10-L12 (3 lines) | main | +2/~1/-0\n```lua\nlocal a = 1\nlocal b = 2\nlocal c = 3\n```",
+                result
+            )
+        end)
+
+        it("handles empty filetype", function()
+            stub(vim.fn, "expand").returns("file.txt")
+            stub(vim.fn, "getline").returns({ "line one", "line two" })
+            vim.b.gitsigns_status_dict = nil
+            vim.bo.filetype = nil
+
+            file_info = load_module()
+            local result = file_info.build_selection(1, 2)
+            assert.equals(
+                "`file.txt` | L1-L2 (2 lines) | (no branch) | (unknown)\n```\nline one\nline two\n```",
+                result
+            )
+        end)
+    end)
+
+    describe("yank_selection", function()
+        it("copies selection info to clipboard registers without error", function()
+            stub(vim.fn, "expand").returns("file.lua")
+            stub(vim.fn, "line").returns(1)
+            stub(vim.fn, "line").returns(1).on_call_with("'<")
+            stub(vim.fn, "line").returns(5).on_call_with("'>")
+            stub(vim.fn, "getline").returns({ "a", "b", "c", "d", "e" })
+            local s_setreg = stub(vim.fn, "setreg")
+            local s_notify = stub(vim, "notify")
+
+            vim.b.gitsigns_status_dict = nil
+            vim.bo.filetype = "lua"
+
+            file_info = load_module()
+            file_info.yank_selection()
+
+            assert.stub(s_setreg).was_called()
+            assert.stub(s_notify).was_called()
         end)
     end)
 end)

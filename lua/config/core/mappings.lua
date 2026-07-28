@@ -15,6 +15,9 @@ keymap.set("n", "<leader>uy", "<CMD>redir @* | file | redir END<CR>", { desc = "
 keymap.set("n", "<leader>uf", function()
     require("config.core.file_info").yank()
 end, { desc = "Copy file info to clipboard" })
+keymap.set("v", "<leader>uf", function()
+    require("config.core.file_info").yank_selection()
+end, { desc = "Copy selection info to clipboard" })
 
 -- Move lines
 keymap.set("v", "J", ":m '>+1<CR>gv=gv")
