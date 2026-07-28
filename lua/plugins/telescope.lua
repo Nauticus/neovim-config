@@ -62,7 +62,7 @@ local M = {
             "<leader>sw",
             function()
                 require("telescope.builtin").grep_string({
-                    search = _G.utils.get_visual_selection_text()[1],
+                    search = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = vim.fn.visualmode() })[1],
                 })
             end,
             mode = "v",
