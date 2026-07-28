@@ -26,6 +26,7 @@ require("lazy").setup({
     },
     concurrency = 2,
     checker = { enabled = false },
+    change_detection = { notify = false },
     diff = {
         cmd = "diffview.nvim",
     }
