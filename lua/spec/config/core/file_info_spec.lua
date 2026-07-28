@@ -11,7 +11,6 @@ describe("file_info", function()
 
     after_each(function()
         package.loaded["config.core.file_info"] = nil
-        package.loaded.gitsigns = nil
     end)
 
     describe("build", function()
@@ -45,7 +44,7 @@ describe("file_info", function()
             assert.equals("/home/user/project/file.lua | L1:C1 | (no branch) | (unknown)", result)
         end)
 
-        it("shows branch and unchanged when gitsigns attached but no hunks", function()
+        it("shows clean when gitsigns attached but no changes", function()
             local s_expand = stub(vim.fn, "expand")
             s_expand.returns("file.lua")
             local s_line = stub(vim.fn, "line")
@@ -53,16 +52,15 @@ describe("file_info", function()
             local s_col = stub(vim.fn, "col")
             s_col.returns(3)
 
-            vim.b.gitsigns_status_dict = { head = "main" }
+            vim.b.gitsigns_status_dict = { head = "main", added = 0, changed = 0, removed = 0 }
             vim.b.gitsigns_head = "main"
-            package.loaded.gitsigns = { get_hunks = function() return {} end }
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals("file.lua | L5:C3 | main | unchanged", result)
+            assert.equals("file.lua | L5:C3 | main | clean", result)
         end)
 
-        it("shows changed (add) when cursor is inside an add hunk", function()
+        it("shows diff stats when file has additions only", function()
             local s_expand = stub(vim.fn, "expand")
             s_expand.returns("file.lua")
             local s_line = stub(vim.fn, "line")
@@ -70,20 +68,15 @@ describe("file_info", function()
             local s_col = stub(vim.fn, "col")
             s_col.returns(1)
 
-            vim.b.gitsigns_status_dict = { head = "feature" }
+            vim.b.gitsigns_status_dict = { head = "feature", added = 3, changed = 0, removed = 0 }
             vim.b.gitsigns_head = "feature"
-            package.loaded.gitsigns = {
-                get_hunks = function()
-                    return { { type = "add", added = { start = 8, count = 5 }, removed = { start = 0, count = 0 } } }
-                end,
-            }
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals("file.lua | L10:C1 | feature | changed (add)", result)
+            assert.equals("file.lua | L10:C1 | feature | +3/~0/-0", result)
         end)
 
-        it("shows unchanged when cursor is outside all hunks", function()
+        it("shows diff stats for a mixed diff", function()
             local s_expand = stub(vim.fn, "expand")
             s_expand.returns("file.lua")
             local s_line = stub(vim.fn, "line")
@@ -91,62 +84,28 @@ describe("file_info", function()
             local s_col = stub(vim.fn, "col")
             s_col.returns(1)
 
-            vim.b.gitsigns_status_dict = { head = "main" }
+            vim.b.gitsigns_status_dict = { head = "main", added = 5, changed = 2, removed = 1 }
             vim.b.gitsigns_head = "main"
-            package.loaded.gitsigns = {
-                get_hunks = function()
-                    return {
-                        { type = "change", added = { start = 1, count = 3 }, removed = { start = 1, count = 2 } },
-                        { type = "delete", added = { start = 10, count = 1 }, removed = { start = 10, count = 4 } }
-                    }
-                end,
-            }
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals("file.lua | L50:C1 | main | unchanged", result)
+            assert.equals("file.lua | L50:C1 | main | +5/~2/-1", result)
         end)
 
-        it("shows changed (change) when cursor is inside a change hunk", function()
+        it("treats missing keys as zero", function()
             local s_expand = stub(vim.fn, "expand")
             s_expand.returns("file.lua")
             local s_line = stub(vim.fn, "line")
-            s_line.returns(2)
+            s_line.returns(1)
             local s_col = stub(vim.fn, "col")
             s_col.returns(1)
 
             vim.b.gitsigns_status_dict = { head = "main" }
             vim.b.gitsigns_head = "main"
-            package.loaded.gitsigns = {
-                get_hunks = function()
-                    return { { type = "change", added = { start = 1, count = 5 }, removed = { start = 1, count = 3 } } }
-                end,
-            }
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals("file.lua | L2:C1 | main | changed (change)", result)
-        end)
-
-        it("shows changed (delete) when cursor is inside a delete hunk", function()
-            local s_expand = stub(vim.fn, "expand")
-            s_expand.returns("file.lua")
-            local s_line = stub(vim.fn, "line")
-            s_line.returns(12)
-            local s_col = stub(vim.fn, "col")
-            s_col.returns(1)
-
-            vim.b.gitsigns_status_dict = { head = "main" }
-            vim.b.gitsigns_head = "main"
-            package.loaded.gitsigns = {
-                get_hunks = function()
-                    return { { type = "delete", added = { start = 10, count = 4 }, removed = { start = 10, count = 8 } } }
-                end,
-            }
-
-            file_info = load_module()
-            local result = file_info.build()
-            assert.equals("file.lua | L12:C1 | main | changed (delete)", result)
+            assert.equals("file.lua | L1:C1 | main | clean", result)
         end)
 
         it("falls back to status_dict.head when gitsigns_head is nil", function()
@@ -157,30 +116,12 @@ describe("file_info", function()
             local s_col = stub(vim.fn, "col")
             s_col.returns(1)
 
-            vim.b.gitsigns_status_dict = { head = "detached-abc123" }
+            vim.b.gitsigns_status_dict = { head = "detached-abc123", added = 0, changed = 0, removed = 0 }
             vim.b.gitsigns_head = nil
-            package.loaded.gitsigns = { get_hunks = function() return {} end }
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals("file.lua | L1:C1 | detached-abc123 | unchanged", result)
-        end)
-
-        it("handles gitsigns.get_hunks returning nil", function()
-            local s_expand = stub(vim.fn, "expand")
-            s_expand.returns("file.lua")
-            local s_line = stub(vim.fn, "line")
-            s_line.returns(1)
-            local s_col = stub(vim.fn, "col")
-            s_col.returns(1)
-
-            vim.b.gitsigns_status_dict = { head = "main" }
-            vim.b.gitsigns_head = "main"
-            package.loaded.gitsigns = { get_hunks = function() return nil end }
-
-            file_info = load_module()
-            local result = file_info.build()
-            assert.equals("file.lua | L1:C1 | main | unchanged", result)
+            assert.equals("file.lua | L1:C1 | detached-abc123 | clean", result)
         end)
     end)
 
@@ -198,7 +139,6 @@ describe("file_info", function()
             vim.b.gitsigns_status_dict = nil
 
             file_info = load_module()
-            -- should not error
             file_info.yank()
 
             assert.stub(s_setreg).was_called()

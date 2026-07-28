@@ -11,30 +11,20 @@ function M.build()
     local line = vim.fn.line(".")
     local col = vim.fn.col(".")
 
-    -- git branch and changed status (via gitsigns buffer variables)
-    local branch, changed = "(no branch)", "(unknown)"
+    -- git branch and whole-file diff stats (via gitsigns buffer variables)
+    local branch, diff = "(no branch)", "(unknown)"
     if vim.b.gitsigns_status_dict then
-        branch = vim.b.gitsigns_head or vim.b.gitsigns_status_dict.head or "(no branch)"
-        local gs = package.loaded.gitsigns
-        if gs then
-            local hunks = gs.get_hunks(0)
-            if hunks then
-                for _, hunk in ipairs(hunks) do
-                    local added_start = hunk.added and hunk.added.start or 0
-                    local added_count = hunk.added and hunk.added.count or 0
-                    if line >= added_start and line < added_start + added_count then
-                        changed = string.format("changed (%s)", hunk.type)
-                        break
-                    end
-                end
-            end
-            if changed == "(unknown)" then
-                changed = "unchanged"
-            end
+        local sd = vim.b.gitsigns_status_dict
+        branch = vim.b.gitsigns_head or sd.head or "(no branch)"
+        local a, c, r = sd.added or 0, sd.changed or 0, sd.removed or 0
+        if a == 0 and c == 0 and r == 0 then
+            diff = "clean"
+        else
+            diff = string.format("+%d/~%d/-%d", a, c, r)
         end
     end
 
-    return string.format("%s | L%d:C%d | %s | %s", path, line, col, branch, changed)
+    return string.format("%s | L%d:C%d | %s | %s", path, line, col, branch, diff)
 end
 
 --- Copy the info string to all registers and show a notification.
