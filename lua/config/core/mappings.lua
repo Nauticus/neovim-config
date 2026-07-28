@@ -32,33 +32,40 @@ keymap.set("n", "J", "mzJ`z")
 -- Toggle
 -- Toggles
 local toggle_opt = function(opt) --[[@param opt string]]
-  vim.opt[opt]:set(not vim.opt[opt].get())
-  vim.notify(
-    string.format("%s: %s", opt, vim.opt[opt].get()),
-    vim.log.levels.INFO,
-    { title = "Option toggled" }
-  )
+    vim.opt[opt]:set(not vim.opt[opt].get())
+    vim.notify(
+        string.format("%s: %s", opt, vim.opt[opt].get()),
+        vim.log.levels.INFO,
+        { title = "Option toggled" }
+    )
 end
 
-keymap.set("n", [[\on]], function() toggle_opt("number") end, { desc = "Toggle 'number'" })
-keymap.set("n", [[\or]], function() toggle_opt("relativenumber") end, { desc = "Toggle 'relativenumber'" })
-keymap.set("n", [[\os]], function() toggle_opt("spell") end, { desc = "Toggle 'spell'" })
-keymap.set("n", [[\ol]], function() toggle_opt("list") end, { desc = "Toggle 'list'" })
-keymap.set("n", [[\ob]], function() toggle_opt("breakindent") end, { desc = "Toggle 'breakindent'" })
-keymap.set("n", [[\ow]], function() toggle_opt("wrap") end, { desc = "Toggle 'wrap'" })
+keymap.set("n", [[\on]], function()
+    toggle_opt("number")
+end, { desc = "Toggle 'number'" })
+keymap.set("n", [[\or]], function()
+    toggle_opt("relativenumber")
+end, { desc = "Toggle 'relativenumber'" })
+keymap.set("n", [[\os]], function()
+    toggle_opt("spell")
+end, { desc = "Toggle 'spell'" })
+keymap.set("n", [[\ol]], function()
+    toggle_opt("list")
+end, { desc = "Toggle 'list'" })
+keymap.set("n", [[\ob]], function()
+    toggle_opt("breakindent")
+end, { desc = "Toggle 'breakindent'" })
+keymap.set("n", [[\ow]], function()
+    toggle_opt("wrap")
+end, { desc = "Toggle 'wrap'" })
 
 -- Paste above/below
 keymap.set({ "n", "x" }, "[p", function()
-  vim.fn.put("!", vim.v.register)
+    vim.fn.put("!", vim.v.register)
 end, { desc = "Paste Above" })
 keymap.set({ "n", "x" }, "]p", function()
-  vim.fn.put("", vim.v.register)
+    vim.fn.put("", vim.v.register)
 end, { desc = "Paste Below" })
-
--- Class editor: open class attribute in a vertical split, one class per line
-keymap.set("n", "<leader>tc", function()
-    require("modules.class_editor").open()
-end, { desc = "Open class editor" })
 
 -- Go to definition in a vertical split
 keymap.set("n", "<C-w>]", function()
