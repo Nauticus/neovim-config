@@ -16,6 +16,8 @@ keymap.set("n", "<leader>uf", function()
     require("config.core.file_info").yank()
 end, { desc = "Copy file info to clipboard" })
 keymap.set("v", "<leader>uf", function()
+    -- Leave visual mode first so '< and '> marks are set
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
     require("config.core.file_info").yank_selection()
 end, { desc = "Copy selection info to clipboard" })
 
