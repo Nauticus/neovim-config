@@ -38,13 +38,13 @@ return {
         },
         git = {
             -- Return true to automatically git add/mv/rm files
-            add = function(path)
+            add = function()
                 return true
             end,
-            mv = function(src_path, dest_path)
+            mv = function()
                 return true
             end,
-            rm = function(path)
+            rm = function()
                 return true
             end,
         },

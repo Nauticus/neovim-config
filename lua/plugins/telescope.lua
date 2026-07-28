@@ -6,6 +6,10 @@ local M = {
         { "nvim-telescope/telescope-ui-select.nvim" },
         { "kyoh86/telescope-windows.nvim" },
         { "tsakirist/telescope-lazy.nvim" },
+        {
+            "nvim-telescope/telescope-fzf-native.nvim",
+            build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install",
+        },
     },
     init = function()
         -- Load ui-select immediately so vim.ui.select is replaced
@@ -166,12 +170,19 @@ M.config = function()
             ["ui-select"] = {
                 require("telescope.themes").get_dropdown({}),
             },
+            fzf = {
+                fuzzy = true,
+                override_generic_sorter = true,
+                override_file_sorter = true,
+                case_mode = "smart_case",
+            },
         },
     })
 
     telescope.load_extension("ui-select")
     telescope.load_extension("lazy")
     telescope.load_extension("windows")
+    telescope.load_extension("fzf")
 end
 
 return M
