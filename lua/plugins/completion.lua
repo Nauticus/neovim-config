@@ -24,30 +24,6 @@ return {
                 max_view_entries = 200,
             },
             mapping = cmp.mapping.preset.insert({
-                ["<Tab>"] = cmp.mapping(function(fallback)
-                    if cmp.visible() then
-                        cmp.select_next_item()
-                    elseif luasnip.expand_or_locally_jumpable() then
-                        luasnip.expand_or_jump()
-                    -- sidekick next edit suggestion
-                    elseif require("sidekick").nes_jump_or_apply() then
-                        return
-                    -- native inline completions
-                    elseif vim.lsp.inline_completion.get() then
-                        return
-                    else
-                        fallback()
-                    end
-                end, { "i", "s" }),
-                ["<S-Tab>"] = cmp.mapping(function(fallback)
-                    if cmp.visible() then
-                        cmp.select_prev_item()
-                    elseif luasnip.jumpable(-1) then
-                        luasnip.jump(-1)
-                    else
-                        fallback()
-                    end
-                end, { "i", "s" }),
                 ["<C-e>"] = cmp.mapping.abort(),
                 ["<C-y>"] = cmp.mapping.confirm({ select = true }),
             }),
