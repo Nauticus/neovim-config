@@ -55,11 +55,6 @@ keymap.set({ "n", "x" }, "]p", function()
   vim.fn.put("", vim.v.register)
 end, { desc = "Paste Below" })
 
--- Tailwind class virtual lines (toggle)
-keymap.set("n", "<leader>cc", function()
-    require("config.core.class_virtual_lines").toggle()
-end, { desc = "Toggle class virtual lines" })
-
 -- Go to definition in a vertical split
 keymap.set("n", "<C-w>]", function()
     vim.cmd.vsplit()
