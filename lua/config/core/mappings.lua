@@ -28,3 +28,9 @@ keymap.set("n", [[\ow]], "<Cmd>set wrap! wrap?<CR>", { desc = "Toggle 'wrap'" })
 
 keymap.set({ 'n', 'x' }, '[p', '<Cmd>exe "put! " . v:register<CR>', { desc = 'Paste Above' })
 keymap.set({ 'n', 'x' }, ']p', '<Cmd>exe "put "  . v:register<CR>', { desc = 'Paste Below' })
+
+-- Go to definition in a vertical split
+keymap.set('n', '<C-w>]', function()
+  vim.cmd.vsplit()
+  vim.lsp.buf.definition()
+end, { desc = 'Go to definition in vertical split' })
