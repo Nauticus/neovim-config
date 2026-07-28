@@ -1,7 +1,8 @@
 --- Module that gathers orientation information about the current buffer.
 local M = {}
 
---- Build a single-line summary of the current buffer.
+--- Build a markdown-oriented summary of the current buffer.
+-- Returns a two-line string: a metadata line and the current line contents in a code fence.
 -- @return string formatted info
 function M.build()
     local path = vim.fn.expand("%:.") -- path relative to cwd
@@ -10,6 +11,7 @@ function M.build()
     end
     local line = vim.fn.line(".")
     local col = vim.fn.col(".")
+    local line_text = vim.fn.getline(".")
 
     -- git branch and whole-file diff stats (via gitsigns buffer variables)
     local branch, diff = "(no branch)", "(unknown)"
@@ -24,7 +26,8 @@ function M.build()
         end
     end
 
-    return string.format("%s | L%d:C%d | %s | %s", path, line, col, branch, diff)
+    local meta = string.format("`%s` | L%d:C%d | %s | %s", path, line, col, branch, diff)
+    return string.format("%s\n```%s\n%s\n```", meta, vim.bo.filetype or "", line_text)
 end
 
 --- Copy the info string to all registers and show a notification.
