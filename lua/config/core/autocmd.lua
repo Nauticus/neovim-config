@@ -64,3 +64,17 @@ autocmd({ "BufRead", "BufNewFile" }, {
     vim.opt_local.ft = "yaml.ansible"
   end,
 })
+
+-- Windows: ensure all LSP servers and child processes are killed on exit.
+-- On Windows, orphaned processes are not automatically cleaned up by the OS
+-- when the parent exits, so we explicitly stop LSP clients on VimLeavePre.
+-- See: https://github.com/neovim/neovim/issues/29475
+-- See: https://github.com/neovim/neovim/issues/14428
+autocmd("VimLeavePre", {
+  desc = "Kill all LSP clients on exit (Windows orphan process mitigation)",
+  callback = function()
+    for _, client in ipairs(vim.lsp.get_active_clients()) do
+      client.stop()
+    end
+  end,
+})
