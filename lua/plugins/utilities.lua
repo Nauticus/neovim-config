@@ -5,19 +5,32 @@ return {
     },
     {
         "numToStr/Comment.nvim",
-        keys = {
-            { "gcc", mode = "n", desc = "Comment toggle current line" },
-            { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
-            { "gc", mode = "x", desc = "Comment toggle linewise (visual)" },
-            { "gbc", mode = "n", desc = "Comment toggle current block" },
-            { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
-            { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
+        opts = {},
+    },
+    {
+        "folke/zen-mode.nvim",
+        opts = {
+            window = {
+                width = 0.8,
+                height = 0.8,
+                options = {
+                    foldcolumn = "0",
+                },
+            },
+            plugins = {
+                gitsigns = { enabled = true },
+                tmux = { enabled = true },
+                wezterm = { enabled = true },
+            },
+            on_open = function()
+                vim.o.cmdheight = 0
+            end,
+            on_close = function()
+                vim.o.cmdheight = 1
+            end,
         },
-        lazy = true,
-        config = function()
-            require("Comment").setup({
-                padding = true,
-            })
-        end,
+        keys = {
+            { [[\z]], "<CMD>ZenMode<CR>", desc = "Toggle zen mode" },
+        },
     },
 }
