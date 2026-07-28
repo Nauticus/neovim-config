@@ -26,8 +26,8 @@ local LANG_QUERIES = {
         {
             query = [[
                 (attribute
-                    attribute_name: (attribute_name) @attr_name
-                    quoted_attribute_value: (quoted_attribute_value) @attr_value) @attr
+                    (attribute_name) @attr_name
+                    (quoted_attribute_value) @attr_value)
             ]],
             attr_predicate = function(name_node, _bufnr)
                 local name = vim.treesitter.get_node_text(name_node, _bufnr)
@@ -53,8 +53,8 @@ local LANG_QUERIES = {
         {
             query = [[
                 (jsx_attribute
-                    property_identifier: (property_identifier) @attr_name
-                    (string) @attr_value) @attr
+                    (property_identifier) @attr_name
+                    (string) @attr_value)
             ]],
             attr_predicate = function(name_node, _bufnr)
                 local name = vim.treesitter.get_node_text(name_node, _bufnr)
@@ -75,8 +75,8 @@ local LANG_QUERIES = {
         {
             query = [[
                 (jsx_attribute
-                    property_identifier: (property_identifier) @attr_name
-                    (jsx_expression (string) @attr_value)) @attr
+                    (property_identifier) @attr_name
+                    (jsx_expression (string) @attr_value))
             ]],
             attr_predicate = function(name_node, _bufnr)
                 local name = vim.treesitter.get_node_text(name_node, _bufnr)
@@ -96,8 +96,8 @@ local LANG_QUERIES = {
         {
             query = [[
                 (jsx_attribute
-                    property_identifier: (property_identifier) @attr_name
-                    (jsx_expression (template_string) @attr_value)) @attr
+                    (property_identifier) @attr_name
+                    (jsx_expression (template_string) @attr_value))
             ]],
             attr_predicate = function(name_node, _bufnr)
                 local name = vim.treesitter.get_node_text(name_node, _bufnr)
@@ -113,8 +113,8 @@ local LANG_QUERIES = {
         {
             query = [[
                 (jsx_attribute
-                    property_identifier: (property_identifier) @attr_name
-                    (jsx_expression (call_expression) @call)) @attr
+                    (property_identifier) @attr_name
+                    (jsx_expression (call_expression) @call))
             ]],
             attr_predicate = function(name_node, _bufnr)
                 local name = vim.treesitter.get_node_text(name_node, _bufnr)
@@ -144,7 +144,7 @@ local LANG_QUERIES = {
             query = [[
                 (call_expression
                     (identifier) @fn_name
-                    arguments: (arguments) @args) @call
+                    (arguments) @args)
             ]],
             call_predicate = function(call_node, bufnr)
                 local ident = call_node:named_child(0)
@@ -172,8 +172,8 @@ local LANG_QUERIES = {
         {
             query = [[
                 (postcss_statement
-                    at_keyword: (at_keyword) @kw
-                    (plain_value) @value) @stmt
+                    (at_keyword) @kw
+                    (plain_value) @value)
             ]],
             kw_predicate = function(kw_node, bufnr)
                 local text = vim.treesitter.get_node_text(kw_node, bufnr)
