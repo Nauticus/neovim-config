@@ -53,6 +53,7 @@ vim.opt.expandtab = true
 vim.opt.smartindent = false
 vim.opt.formatoptions:remove("o")
 vim.opt.ssop = vim.opt.ssop - { "blank", "help", "buffers" } + { "terminal" }
+vim.opt.switchbuf:append("vsplit")
 vim.opt.fillchars:append({
     horiz = "━",
     horizup = "┻",
