@@ -12,7 +12,7 @@ vim.opt.diffopt:append({
 vim.opt.updatetime = 700
 vim.opt.timeoutlen = 500
 
-if vim.has("clipboard") then
+if vim.fn.has("clipboard") == 1 then
     vim.opt.clipboard = "unnamedplus"
 end
 
