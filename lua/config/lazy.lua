@@ -17,14 +17,11 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-vim.g.mapleader = vim.api.nvim_replace_termcodes("<Space>", true, true, true)
-vim.g.maplocalleader = "\\"
-
 require("lazy").setup({
     spec = {
         { import = "plugins" },
     },
-    concurrency = 2,
+    concurrency = jit.os:find("Windows") and vim.uv.available_parallelism() or nil,
     checker = { enabled = false },
     change_detection = { notify = false },
     diff = {
