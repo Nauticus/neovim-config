@@ -14,7 +14,7 @@ describe("file_info", function()
     end)
 
     describe("build", function()
-        it("returns correct markdown format with no gitsigns", function()
+        it("returns correct format with no gitsigns", function()
             stub(vim.fn, "expand").returns("mappings.lua")
             stub(vim.fn, "line").returns(42)
             stub(vim.fn, "col").returns(10)
@@ -25,7 +25,7 @@ describe("file_info", function()
             file_info = load_module()
             local result = file_info.build()
             assert.equals(
-                "`mappings.lua` | L42:C10 | (no branch) | (unknown)\n```lua\n    local x = 1\n```",
+                "mappings.lua | L42:C10 | (no branch) | [lua] (unknown)\n    local x = 1",
                 result
             )
         end)
@@ -43,7 +43,7 @@ describe("file_info", function()
             file_info = load_module()
             local result = file_info.build()
             assert.equals(
-                "`/home/user/project/file.lua` | L1:C1 | (no branch) | (unknown)\n```lua\n\n```",
+                "/home/user/project/file.lua | L1:C1 | (no branch) | [lua] (unknown)\n",
                 result
             )
         end)
@@ -60,7 +60,7 @@ describe("file_info", function()
             file_info = load_module()
             local result = file_info.build()
             assert.equals(
-                "`file.lua` | L5:C3 | main | clean\n```txt\nhello\n```",
+                "file.lua | L5:C3 | main | [txt] clean\nhello",
                 result
             )
         end)
@@ -77,7 +77,7 @@ describe("file_info", function()
             file_info = load_module()
             local result = file_info.build()
             assert.equals(
-                "`file.lua` | L50:C1 | main | +5/~2/-1\n```lua\nlocal foo = bar\n```",
+                "file.lua | L50:C1 | main | [lua] +5/~2/-1\nlocal foo = bar",
                 result
             )
         end)
@@ -94,23 +94,68 @@ describe("file_info", function()
             file_info = load_module()
             local result = file_info.build()
             assert.equals(
-                "`file.lua` | L1:C1 | detached-abc123 | clean\n```txt\ntest\n```",
+                "file.lua | L1:C1 | detached-abc123 | [txt] clean\ntest",
                 result
             )
         end)
 
-        it("uses empty string for filetype when bo.filetype is nil", function()
-            stub(vim.fn, "expand").returns("file.lua")
+        it("omits lang tag when bo.filetype is empty", function()
+            stub(vim.fn, "expand").returns("file.txt")
             stub(vim.fn, "line").returns(1)
             stub(vim.fn, "col").returns(1)
             stub(vim.fn, "getline").returns("x")
             vim.b.gitsigns_status_dict = nil
-            vim.bo.filetype = nil
+            vim.bo.filetype = ""
 
             file_info = load_module()
             local result = file_info.build()
             assert.equals(
-                "`file.lua` | L1:C1 | (no branch) | (unknown)\n```\nx\n```",
+                "file.txt | L1:C1 | (no branch) | (unknown)\nx",
+                result
+            )
+        end)
+    end)
+
+    describe("build_selection", function()
+        it("shows single-line selection without range suffix", function()
+            stub(vim.fn, "expand").returns("file.lua")
+            stub(vim.fn, "getline").returns({ "local x = 1" })
+            vim.b.gitsigns_status_dict = nil
+            vim.bo.filetype = "lua"
+
+            file_info = load_module()
+            local result = file_info.build_selection(5, 5)
+            assert.equals(
+                "file.lua | L5 | (no branch) | [lua] (unknown)\nlocal x = 1",
+                result
+            )
+        end)
+
+        it("shows multi-line selection with range and line count", function()
+            stub(vim.fn, "expand").returns("file.lua")
+            stub(vim.fn, "getline").returns({ "local a = 1", "local b = 2", "local c = 3" })
+            vim.b.gitsigns_status_dict = { head = "main", added = 2, changed = 1, removed = 0 }
+            vim.b.gitsigns_head = "main"
+            vim.bo.filetype = "lua"
+
+            file_info = load_module()
+            local result = file_info.build_selection(10, 12)
+            assert.equals(
+                "file.lua | L10-L12 (3 lines) | main | [lua] +2/~1/-0\nlocal a = 1\nlocal b = 2\nlocal c = 3",
+                result
+            )
+        end)
+
+        it("omits lang tag when filetype is empty", function()
+            stub(vim.fn, "expand").returns("file.txt")
+            stub(vim.fn, "getline").returns({ "line one", "line two" })
+            vim.b.gitsigns_status_dict = nil
+            vim.bo.filetype = ""
+
+            file_info = load_module()
+            local result = file_info.build_selection(1, 2)
+            assert.equals(
+                "file.txt | L1-L2 (2 lines) | (no branch) | (unknown)\nline one\nline two",
                 result
             )
         end)
@@ -140,55 +185,9 @@ describe("file_info", function()
         end)
     end)
 
-    describe("build_selection", function()
-        it("shows single-line selection without range suffix", function()
-            stub(vim.fn, "expand").returns("file.lua")
-            stub(vim.fn, "getline").returns({ "local x = 1" })
-            vim.b.gitsigns_status_dict = nil
-            vim.bo.filetype = "lua"
-
-            file_info = load_module()
-            local result = file_info.build_selection(5, 5)
-            assert.equals(
-                "`file.lua` | L5 | (no branch) | (unknown)\n```lua\nlocal x = 1\n```",
-                result
-            )
-        end)
-
-        it("shows multi-line selection with range and line count", function()
-            stub(vim.fn, "expand").returns("file.lua")
-            stub(vim.fn, "getline").returns({ "local a = 1", "local b = 2", "local c = 3" })
-            vim.b.gitsigns_status_dict = { head = "main", added = 2, changed = 1, removed = 0 }
-            vim.b.gitsigns_head = "main"
-            vim.bo.filetype = "lua"
-
-            file_info = load_module()
-            local result = file_info.build_selection(10, 12)
-            assert.equals(
-                "`file.lua` | L10-L12 (3 lines) | main | +2/~1/-0\n```lua\nlocal a = 1\nlocal b = 2\nlocal c = 3\n```",
-                result
-            )
-        end)
-
-        it("handles empty filetype", function()
-            stub(vim.fn, "expand").returns("file.txt")
-            stub(vim.fn, "getline").returns({ "line one", "line two" })
-            vim.b.gitsigns_status_dict = nil
-            vim.bo.filetype = nil
-
-            file_info = load_module()
-            local result = file_info.build_selection(1, 2)
-            assert.equals(
-                "`file.txt` | L1-L2 (2 lines) | (no branch) | (unknown)\n```\nline one\nline two\n```",
-                result
-            )
-        end)
-    end)
-
     describe("yank_selection", function()
         it("copies selection info to clipboard registers without error", function()
             stub(vim.fn, "expand").returns("file.lua")
-            -- yank_selection uses line('v') and line('.') before Esc
             local s_line = stub(vim.fn, "line")
             s_line.returns(5).on_call_with("v")
             s_line.returns(1).on_call_with(".")
