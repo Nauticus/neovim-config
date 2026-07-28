@@ -55,6 +55,11 @@ keymap.set({ "n", "x" }, "]p", function()
   vim.fn.put("", vim.v.register)
 end, { desc = "Paste Below" })
 
+-- Class editor: open class attribute in a vertical split, one class per line
+keymap.set("n", "<leader>tc", function()
+    require("modules.class_editor").open()
+end, { desc = "Open class editor" })
+
 -- Go to definition in a vertical split
 keymap.set("n", "<C-w>]", function()
     vim.cmd.vsplit()
