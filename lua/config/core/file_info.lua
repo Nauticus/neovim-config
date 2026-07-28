@@ -40,9 +40,7 @@ end
 --- Copy the info string to all registers and show a notification.
 function M.yank()
     local info = M.build()
-    vim.fn.setreg("*", info)
     vim.fn.setreg("+", info)
-    vim.fn.setreg(".", info)
     vim.fn.setreg("", info)
     vim.notify(info, vim.log.levels.INFO)
 end
