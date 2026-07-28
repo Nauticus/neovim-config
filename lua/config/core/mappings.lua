@@ -1,7 +1,12 @@
 local keymap = vim.keymap
 
 -- Disable F15 globally (prevents waking machine from sleep)
-keymap.set({ 'n', 'i', 'v', 'x', 's', 'o', 'c' }, '<F15>', '<Nop>', { desc = 'Noop (F15 disabled)' })
+keymap.set(
+    { "n", "i", "v", "x", "s", "o", "c" },
+    "<F15>",
+    "<Nop>",
+    { desc = "Noop (F15 disabled)" }
+)
 
 -- GLOBAL MAPPINGS
 keymap.set("i", "<C-h>", "<BS>", { desc = "Backspace" })
@@ -25,18 +30,38 @@ keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 keymap.set("n", "J", "mzJ`z")
 
 -- Toggle
-keymap.set('n', [[\on]], "<Cmd>set number! number?<CR>", { desc = "Toggle 'number'" })
-keymap.set('n', [[\or]], "<Cmd>set relativenumber! relativenumber?<CR>", { desc = "Toggle 'relativenumber'" })
-keymap.set("n", [[\os]], "<Cmd>set spell! spell?<CR>", { desc = "Toggle 'spell'" })
-keymap.set("n", [[\ol]], "<Cmd>set list! list?<CR>", { desc = "Toggle 'list'" })
-keymap.set("n", [[\ob]], "<Cmd>set bri! bri?<CR>", { desc = "Toggle 'breakindent'" })
-keymap.set("n", [[\ow]], "<Cmd>set wrap! wrap?<CR>", { desc = "Toggle 'wrap'" })
+-- Toggles
+local toggle_opt = function(opt) --[[@param opt string]]
+  vim.opt[opt]:set(not vim.opt[opt].get())
+  vim.notify(
+    string.format("%s: %s", opt, vim.opt[opt].get()),
+    vim.log.levels.INFO,
+    { title = "Option toggled" }
+  )
+end
 
-keymap.set({ 'n', 'x' }, '[p', '<Cmd>exe "put! " . v:register<CR>', { desc = 'Paste Above' })
-keymap.set({ 'n', 'x' }, ']p', '<Cmd>exe "put "  . v:register<CR>', { desc = 'Paste Below' })
+keymap.set("n", [[\on]], function() toggle_opt("number") end, { desc = "Toggle 'number'" })
+keymap.set("n", [[\or]], function() toggle_opt("relativenumber") end, { desc = "Toggle 'relativenumber'" })
+keymap.set("n", [[\os]], function() toggle_opt("spell") end, { desc = "Toggle 'spell'" })
+keymap.set("n", [[\ol]], function() toggle_opt("list") end, { desc = "Toggle 'list'" })
+keymap.set("n", [[\ob]], function() toggle_opt("breakindent") end, { desc = "Toggle 'breakindent'" })
+keymap.set("n", [[\ow]], function() toggle_opt("wrap") end, { desc = "Toggle 'wrap'" })
+
+-- Paste above/below
+keymap.set({ "n", "x" }, "[p", function()
+  vim.fn.put("!", vim.v.register)
+end, { desc = "Paste Above" })
+keymap.set({ "n", "x" }, "]p", function()
+  vim.fn.put("", vim.v.register)
+end, { desc = "Paste Below" })
+
+-- Tailwind class virtual lines (toggle)
+keymap.set("n", "<leader>cc", function()
+    require("config.core.class_virtual_lines").toggle()
+end, { desc = "Toggle class virtual lines" })
 
 -- Go to definition in a vertical split
-keymap.set('n', '<C-w>]', function()
-  vim.cmd.vsplit()
-  vim.lsp.buf.definition()
-end, { desc = 'Go to definition in vertical split' })
+keymap.set("n", "<C-w>]", function()
+    vim.cmd.vsplit()
+    vim.lsp.buf.definition()
+end, { desc = "Go to definition in vertical split" })

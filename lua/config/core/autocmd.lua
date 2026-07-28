@@ -7,6 +7,7 @@ augroup("GitBufferOptions", { clear = true })
 augroup("SourcePacker", { clear = true })
 augroup("HighlightYank", { clear = true })
 augroup("KeymapSyntax", { clear = true })
+augroup("ClassVirtualLines", { clear = true })
 
 autocmd("BufEnter", {
     desc = "Disable continuation of line comments on new lines.",
@@ -63,6 +64,15 @@ autocmd({ "BufRead", "BufNewFile" }, {
   callback = function()
     vim.opt_local.ft = "yaml.ansible"
   end,
+})
+
+autocmd({ "BufEnter", "InsertLeave", "TextChanged", "TextChangedI" }, {
+    desc = "Refresh class virtual lines when the buffer changes",
+    group = "ClassVirtualLines",
+    pattern = "*",
+    callback = function()
+      require("config.core.class_virtual_lines").refresh()
+    end,
 })
 
 -- Windows: ensure all LSP servers and child processes are killed on exit.
