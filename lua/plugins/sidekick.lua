@@ -2,7 +2,11 @@ return {
     "folke/sidekick.nvim",
     lazy = false,
     commit = "6b69c42",
-    opts = {},
+    opts = {
+        signs = {
+            enabled = true,
+        },
+    },
     keys = {
         {
             "<c-.>",
