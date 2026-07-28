@@ -200,7 +200,8 @@ end
 --- Get the language tree for a buffer
 local function get_parser(bufnr)
     bufnr = bufnr or 0
-    local lang = vim.treesitter.language.get_lang(bufnr)
+    local ft = vim.bo[bufnr].filetype
+    local lang = vim.treesitter.language.get_lang(ft)
     if not lang then
         return nil
     end
@@ -281,12 +282,12 @@ end
 --- Get the detected language for a buffer
 local function get_lang(bufnr)
     bufnr = bufnr or 0
-    local lang = vim.treesitter.language.get_lang(bufnr)
+    local ft = vim.bo[bufnr].filetype
+    local lang = vim.treesitter.language.get_lang(ft)
     if lang then
         return lang
     end
     -- Fallback: map common filetypes to languages
-    local ft = vim.bo[bufnr].filetype
     local ft_to_lang = {
         vue = "html",
         svelte = "html",
