@@ -1,19 +1,11 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
-augroup("FormatOptions", { clear = true })
 augroup("TerminalOptions", { clear = true })
 augroup("GitBufferOptions", { clear = true })
 augroup("SourcePacker", { clear = true })
 augroup("HighlightYank", { clear = true })
 augroup("KeymapSyntax", { clear = true })
-
-autocmd("BufEnter", {
-    desc = "Disable continuation of line comments on new lines.",
-    group = "FormatOptions",
-    pattern = "*",
-    command = "setlocal formatoptions-=c formatoptions-=o",
-})
 
 autocmd("TermOpen", {
     desc = "Customize the terminal buffers.",

@@ -51,7 +51,7 @@ vim.opt.showtabline = 1
 vim.opt.softtabstop = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = false
-vim.opt.formatoptions:remove("o")
+vim.opt.formatoptions:remove({ "c", "o" })
 vim.opt.ssop = vim.opt.ssop - { "blank", "help", "buffers" } + { "terminal" }
 vim.opt.fillchars:append({
     horiz = "━",
