@@ -74,11 +74,19 @@ function M.yank()
 end
 
 --- Copy visual-selection info to all registers and show a notification.
+-- Must be called from a visual-mode keymap (before leaving visual mode).
 function M.yank_selection()
-    -- Use 'v' register (last visual selection) to get the range
-    local start_line = vim.fn.line("'<")
-    local end_line = vim.fn.line("'>")
-    local info = M.build_selection(start_line, end_line)
+    -- Capture range while still in visual mode: 'v' is selection start,
+    -- '.' is current cursor. '<' and '>' are not yet set at this point.
+    local v_line = vim.fn.line("v")
+    local cur_line = vim.fn.line(".")
+    local range_start = math.min(v_line, cur_line)
+    local range_end = math.max(v_line, cur_line)
+
+    -- Leave visual mode
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+
+    local info = M.build_selection(range_start, range_end)
     vim.fn.setreg("+", info)
     vim.fn.setreg("", info)
     vim.notify(info, vim.log.levels.INFO)
