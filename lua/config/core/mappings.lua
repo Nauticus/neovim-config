@@ -7,6 +7,9 @@ keymap.set({ 'n', 'i', 'v', 'x', 's', 'o', 'c' }, '<F15>', '<Nop>', { desc = 'No
 keymap.set("i", "<C-h>", "<BS>", { desc = "Backspace" })
 
 -- UTILS (u)
+keymap.set("n", "<leader>ut", function()
+    return "<Cmd>packadd nvim.undotree | Undotree<CR>"
+end, { expr = true, desc = "Undotree" })
 keymap.set("n", "<leader>ur", "<CMD>so %<CR>", { desc = "Source file" })
 keymap.set("n", "<leader>uy", "<CMD>redir @* | file | redir END<CR>", { desc = "Paste file info" })
 
