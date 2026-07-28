@@ -183,4 +183,31 @@ describe("file_info", function()
             assert.equals("file.lua | L1:C1 | main | unchanged", result)
         end)
     end)
+
+    describe("yank", function()
+        it("copies info to clipboard registers without error", function()
+            local s_expand = stub(vim.fn, "expand")
+            s_expand.returns("file.lua")
+            local s_line = stub(vim.fn, "line")
+            s_line.returns(1)
+            local s_col = stub(vim.fn, "col")
+            s_col.returns(1)
+            local s_setreg = stub(vim.fn, "setreg")
+            local s_notify = stub(vim, "notify")
+
+            vim.b.gitsigns_status_dict = nil
+
+            file_info = load_module()
+            -- should not error
+            file_info.yank()
+
+            assert.stub(s_setreg).was_called()
+            assert.stub(s_notify).was_called()
+            -- verify only valid registers are used
+            for _, call in ipairs(s_setreg.calls) do
+                local reg = call.vals[1]
+                assert.is_true(reg == "+" or reg == "", string.format("unexpected register: %s", reg))
+            end
+        end)
+    end)
 end)
