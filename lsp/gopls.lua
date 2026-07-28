@@ -1,14 +1,14 @@
 return {
     cmd = { "gopls" },
     filetypes = {
-        'go',
+        "go",
         "gomod",
         "gowork",
-        "gotmpl"
+        "gotmpl",
     },
     root_markers = {
         "go.work",
         "go.mod",
-        ".git"
-    }
+        ".git",
+    },
 }

@@ -1,7 +1,20 @@
 return {
     {
         "jsongerber/nvim-px-to-rem",
-        ft = { "css", "scss", "sass", "less", "javascript", "javascriptreact", "typescript", "typescriptreact", "html", "svelte", "vue", "astro" },
+        ft = {
+            "css",
+            "scss",
+            "sass",
+            "less",
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact",
+            "html",
+            "svelte",
+            "vue",
+            "astro",
+        },
         config = true,
     },
     {

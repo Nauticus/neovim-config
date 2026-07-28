@@ -59,10 +59,7 @@ describe("file_info", function()
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals(
-                "file.lua | L5:C3 | main | [txt] clean\nhello",
-                result
-            )
+            assert.equals("file.lua | L5:C3 | main | [txt] clean\nhello", result)
         end)
 
         it("shows diff stats for a mixed diff", function()
@@ -76,10 +73,7 @@ describe("file_info", function()
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals(
-                "file.lua | L50:C1 | main | [lua] +5/~2/-1\nlocal foo = bar",
-                result
-            )
+            assert.equals("file.lua | L50:C1 | main | [lua] +5/~2/-1\nlocal foo = bar", result)
         end)
 
         it("falls back to status_dict.head when gitsigns_head is nil", function()
@@ -87,16 +81,14 @@ describe("file_info", function()
             stub(vim.fn, "line").returns(1)
             stub(vim.fn, "col").returns(1)
             stub(vim.fn, "getline").returns("test")
-            vim.b.gitsigns_status_dict = { head = "detached-abc123", added = 0, changed = 0, removed = 0 }
+            vim.b.gitsigns_status_dict =
+                { head = "detached-abc123", added = 0, changed = 0, removed = 0 }
             vim.b.gitsigns_head = nil
             vim.bo.filetype = "txt"
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals(
-                "file.lua | L1:C1 | detached-abc123 | [txt] clean\ntest",
-                result
-            )
+            assert.equals("file.lua | L1:C1 | detached-abc123 | [txt] clean\ntest", result)
         end)
 
         it("omits lang tag when bo.filetype is empty", function()
@@ -109,10 +101,7 @@ describe("file_info", function()
 
             file_info = load_module()
             local result = file_info.build()
-            assert.equals(
-                "file.txt | L1:C1 | (no branch) | (unknown)\nx",
-                result
-            )
+            assert.equals("file.txt | L1:C1 | (no branch) | (unknown)\nx", result)
         end)
     end)
 
@@ -125,10 +114,7 @@ describe("file_info", function()
 
             file_info = load_module()
             local result = file_info.build_selection(5, 5)
-            assert.equals(
-                "file.lua | L5 | (no branch) | [lua] (unknown)\nlocal x = 1",
-                result
-            )
+            assert.equals("file.lua | L5 | (no branch) | [lua] (unknown)\nlocal x = 1", result)
         end)
 
         it("shows multi-line selection with range and line count", function()
@@ -180,7 +166,10 @@ describe("file_info", function()
             assert.stub(s_notify).was_called()
             for _, call in ipairs(s_setreg.calls) do
                 local reg = call.vals[1]
-                assert.is_true(reg == "+" or reg == "", string.format("unexpected register: %s", reg))
+                assert.is_true(
+                    reg == "+" or reg == "",
+                    string.format("unexpected register: %s", reg)
+                )
             end
         end)
     end)

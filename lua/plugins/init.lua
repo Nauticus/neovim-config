@@ -13,7 +13,7 @@ return {
                 transparent_background = true,
                 float = {
                     solid = true,
-                    transparent = true
+                    transparent = true,
                 },
                 styles = {
                     variables = {},
@@ -59,7 +59,7 @@ return {
                     gitsigns = true,
                     nvimtree = true,
                     telescope = false,
-                    notify = true,
+                    notify = false,
                     mini = true,
                     mason = true,
                     semantic_tokens = true,

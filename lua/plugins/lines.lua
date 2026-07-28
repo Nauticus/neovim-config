@@ -3,20 +3,20 @@ return {
     enabled = true,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-        local colors = require("catppuccin.palettes").get_palette "mocha"
+        local colors = require("catppuccin.palettes").get_palette("mocha")
         local theme
         if colors ~= nil then
             theme = {
                 normal = {
-                    a = { bg = colors.mantle, fg = colors.subtext0, gui = 'bold' },
+                    a = { bg = colors.mantle, fg = colors.subtext0, gui = "bold" },
                     b = { fg = colors.subtext0 },
                     c = { fg = colors.subtext0 },
-                    z = { bg = colors.mantle }
+                    z = { bg = colors.mantle },
                 },
                 insert = {
-                    a = { bg = colors.peach, fg = colors.crust, gui = 'bold' },
-                    z = { bg = colors.mantle }
-                }
+                    a = { bg = colors.peach, fg = colors.crust, gui = "bold" },
+                    z = { bg = colors.mantle },
+                },
             }
         end
         require("lualine").setup({
@@ -32,7 +32,7 @@ return {
                 lualine_a = {},
                 lualine_b = {
                     { "filetype", icon_only = true },
-                    { "filename", path = 1,        file_status = true, shorting_target = 50 },
+                    { "filename", path = 1, file_status = true, shorting_target = 50 },
                 },
                 lualine_c = {},
                 lualine_x = {
@@ -62,5 +62,5 @@ return {
                 lualine_z = {},
             },
         })
-    end
+    end,
 }

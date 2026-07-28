@@ -13,7 +13,7 @@ Generated from config review. Each item has a `Status` and `Decision` field — 
 Two entries bind `<leader>sw` — one normal mode (`grep_string`), one visual mode (`grep visual selection`). They live in the same `keys` table so the visual mode entry overwrites the normal mode one. The normal-mode `<leader>sw` is dead.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** This is fine. I want the visual mode mapping to take precedence, when I select particular word.
 
 ---
 
@@ -24,7 +24,7 @@ Two entries bind `<leader>sw` — one normal mode (`grep_string`), one visual mo
 Neovim uses LuaJIT, not Lua 5.1. While mostly compatible, the correct Stylua setting is `syntax = "LuaJIT"` (or omit for `"All"`).
 
 - **Status:** open
-- **Decision:**
+- **Decision:** Lets fix this.
 
 ---
 
@@ -37,7 +37,7 @@ Neovim uses LuaJIT, not Lua 5.1. While mostly compatible, the correct Stylua set
 Pinning to a raw commit means lazy.nvim will never update it. Pin to a tag/version or remove the pin.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** This is intentional. I want to pin sidekick.nvim to a specific commit because I don't want it to update automatically. I will update it manually when I want to.
 
 ---
 
@@ -48,7 +48,7 @@ Pinning to a raw commit means lazy.nvim will never update it. Pin to a tag/versi
 `lazydev.nvim` has `integrations.cmp = false`, so cmp won't get LSP completions from lazydev. And `lua_ls` doesn't set `settings.Lua.workspace.library` to point at Neovim's runtime. Neither LSP can auto-complete Neovim API types into cmp.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** Lets investigate this. I want to have LSP completions for Neovim API types in cmp.
 
 ---
 
@@ -59,7 +59,7 @@ Pinning to a raw commit means lazy.nvim will never update it. Pin to a tag/versi
 `vim.o.foldmethod = "expr"` and `vim.o.foldexpr = "v:lua.vim.lsp.foldexpr()"` are set unconditionally. If LSP isn't attached yet or doesn't support folding, this degrades the fold experience.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** Please read the documentation for `vim.lsp.foldexpr()` and see if it is safe to call when no LSP is attached. If not, we should move this into an `LspAttach` autocmd.
 
 ---
 
@@ -72,7 +72,7 @@ Pinning to a raw commit means lazy.nvim will never update it. Pin to a tag/versi
 Catppuccin has `indent_blankline = false` in integrations. No `indent-blankline.nvim` or `mini.indentscope` is installed. The `fillchars.fold = "⋅"` suggests interest in visual polish but indentation is invisible.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** Lets keep this that way. I don't want to have indent guides in my config.
 
 ---
 
@@ -83,7 +83,7 @@ Catppuccin has `indent_blankline = false` in integrations. No `indent-blankline.
 `cmp.setup.cmdline(":", ...)` only has `{ name = "path" }`. No `cmp-cmdline` source, so command name completion in `:` is missing.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** Lets fix this.
 
 ---
 
@@ -96,7 +96,7 @@ Catppuccin has `indent_blankline = false` in integrations. No `indent-blankline.
 Both provide file browsing. nvim-tree is a sidebar file explorer; oil replaces the netrw buffer with a directory editor. They work differently but compete for the "navigate files" workflow. Decide if both are needed or if one should be disabled.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** I want to keep both. I use nvim-tree for a sidebar file explorer and oil for a directory editor. They serve different purposes.
 
 ---
 
@@ -107,7 +107,7 @@ Both provide file browsing. nvim-tree is a sidebar file explorer; oil replaces t
 `integrations.notify = true` is set but no `nvim-notify` (or similar) plugin is loaded. Catppuccin will silently skip the integration and vim.notify uses the basic built-in with no UI.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** Lets set this to false. I don't want to use nvim-notify in my config.
 
 ---
 
@@ -118,7 +118,7 @@ Both provide file browsing. nvim-tree is a sidebar file explorer; oil replaces t
 A temp file sits in the repo. Either rename to `.luarc.json` and commit, or add `*.json.temp` to `.gitignore`.
 
 - **Status:** open
-- **Decision:**
+- **Decision:** I don't know what this file is for.
 
 ---
 

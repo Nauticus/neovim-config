@@ -14,17 +14,20 @@ local rep = require("luasnip.extras").rep
 return {
     s(
         { trig = "react-use-effect", name = "React useEffect hook" },
-        fmt([[
+        fmt(
+            [[
         {}useEffect(() => {{
             {}
         }}, [{}]);
-        ]], {
-            c(1, {
-                t(""),
-                t("React."),
-            }),
-            i(2),
-            i(3),
-        })
+        ]],
+            {
+                c(1, {
+                    t(""),
+                    t("React."),
+                }),
+                i(2),
+                i(3),
+            }
+        )
     ),
 }

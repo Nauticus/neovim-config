@@ -64,7 +64,16 @@ function M.build_selection(range_start, range_end)
     if line_count == 1 then
         meta = string.format("%s | L%d | %s | %s%s", path, range_start, branch, lang, diff)
     else
-        meta = string.format("%s | L%d-L%d (%d lines) | %s | %s%s", path, range_start, range_end, line_count, branch, lang, diff)
+        meta = string.format(
+            "%s | L%d-L%d (%d lines) | %s | %s%s",
+            path,
+            range_start,
+            range_end,
+            line_count,
+            branch,
+            lang,
+            diff
+        )
     end
     return string.format("%s\n%s", meta, line_text)
 end

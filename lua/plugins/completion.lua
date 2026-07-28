@@ -4,6 +4,7 @@ return {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-path",
         "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-cmdline",
         "saadparwaiz1/cmp_luasnip",
         "rafamadriz/friendly-snippets",
     },
@@ -38,6 +39,7 @@ return {
             },
             sources = cmp.config.sources({
                 { name = "nvim_lsp", priority = 1000 },
+                { name = "lazydev", priority = 900 },
                 { name = "luasnip", priority = 750 },
                 { name = "path", priority = 500 },
                 { name = "buffer", priority = 250, keyword_length = 3, max_item_count = 5 },
@@ -58,9 +60,11 @@ return {
         })
         cmp.setup.cmdline(":", {
             mapping = cmp.mapping.preset.cmdline(),
-            sources = {
+            sources = cmp.config.sources({
+                { name = "cmdline" },
+            }, {
                 { name = "path" },
-            },
+            }),
         })
     end,
 }
