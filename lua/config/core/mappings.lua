@@ -42,8 +42,8 @@ keymap.set("n", "<leader>uf", function()
     end
 
     local info = string.format("%s | L%d:C%d | %s | %s", path, line, col, branch, changed)
-    vim.fn.setreg("*")
-    vim.fn.setreg("+")
+    vim.fn.setreg("*", info)
+    vim.fn.setreg("+", info)
     vim.fn.setreg(".", info)
     vim.fn.setreg("", info)
     vim.notify(info, vim.log.levels.INFO)
