@@ -84,13 +84,6 @@ return {
     { "ThePrimeagen/vim-be-good", cmd = "VimBeGood" },
     -- using packer.nvim
     {
-        "nmac427/guess-indent.nvim",
-        enabled = false,
-        config = function()
-            require("guess-indent").setup({})
-        end,
-    },
-    {
         "olrtg/nvim-emmet",
         config = function()
             vim.keymap.set({ "n", "v" }, "<leader>xe", require("nvim-emmet").wrap_with_abbreviation)

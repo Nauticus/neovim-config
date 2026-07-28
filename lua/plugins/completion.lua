@@ -1,42 +1,90 @@
 return {
-    "saghen/blink.cmp",
-    -- dependencies = { "rafamadriz/friendly-snippets" },
-    -- enabled = false,
-    version = "1.*",
-    ---@module 'blink.cmp'
-    ---@type blink.cmp.Config
-    event = { "VimEnter" },
-    opts = {
-        keymap = {
-            preset = "default",
-            ["<Tab>"] = {
-                "snippet_forward",
-                function() -- sidekick next edit suggestion
-                    return require("sidekick").nes_jump_or_apply()
-                end,
-                function() -- if you are using Neovim's native inline completions
-                    return vim.lsp.inline_completion.get()
-                end,
-                "fallback",
-            },
-        },
-        appearance = {
-            nerd_font_variant = "mono",
-        },
-        completion = {
-            documentation = {
-                auto_show = true,
-                auto_show_delay_ms = 500,
-            },
-            menu = {
-                auto_show_delay_ms = 300,
-            },
-        },
-        signature = { enabled = true },
-        sources = {
-            default = { "lsp", "path", "buffer" },
-        },
-        fuzzy = { implementation = "rust" },
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-buffer",
+        "saadparwaiz1/cmp_luasnip",
+        "rafamadriz/friendly-snippets",
     },
-    opts_extend = { "sources.default" },
+    event = "InsertEnter",
+    config = function()
+        local cmp = require("cmp")
+        local luasnip = require("luasnip")
+
+        cmp.setup({
+            preselect = cmp.PreselectMode.Item,
+            performance = {
+                debounce = 60,
+                throttle = 30,
+                fetching_timeout = 500,
+                filtering_context_budget = 3,
+                confirm_resolve_timeout = 80,
+                async_budget = 1,
+                max_view_entries = 200,
+            },
+            mapping = cmp.mapping.preset.insert({
+                ["<Tab>"] = cmp.mapping(function(fallback)
+                    if cmp.visible() then
+                        cmp.select_next_item()
+                    elseif luasnip.expand_or_locally_jumpable() then
+                        luasnip.expand_or_jump()
+                    -- sidekick next edit suggestion
+                    elseif require("sidekick").nes_jump_or_apply() then
+                        return
+                    -- native inline completions
+                    elseif vim.lsp.inline_completion.get() then
+                        return
+                    else
+                        fallback()
+                    end
+                end, { "i", "s" }),
+                ["<S-Tab>"] = cmp.mapping(function(fallback)
+                    if cmp.visible() then
+                        cmp.select_prev_item()
+                    elseif luasnip.jumpable(-1) then
+                        luasnip.jump(-1)
+                    else
+                        fallback()
+                    end
+                end, { "i", "s" }),
+                ["<C-e>"] = cmp.mapping.abort(),
+                ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+            }),
+            snippet = {
+                expand = function(args)
+                    luasnip.lsp_expand(args.body)
+                end,
+            },
+            window = {
+                completion = cmp.config.window.bordered(),
+                documentation = cmp.config.window.bordered(),
+            },
+            sources = cmp.config.sources({
+                { name = "nvim_lsp", priority = 1000 },
+                { name = "luasnip", priority = 750 },
+                { name = "path", priority = 500 },
+                { name = "buffer", priority = 250, keyword_length = 3, max_item_count = 5 },
+            }),
+            view = {
+                docs = {
+                    auto_open = true,
+                },
+            },
+        })
+
+        -- Set up completion for cmdline (file paths, etc.)
+        cmp.setup.cmdline({ "/", "?" }, {
+            mapping = cmp.mapping.preset.cmdline(),
+            sources = {
+                { name = "buffer" },
+            },
+        })
+        cmp.setup.cmdline(":", {
+            mapping = cmp.mapping.preset.cmdline(),
+            sources = {
+                { name = "path" },
+            },
+        })
+    end,
 }

@@ -1,16 +1,17 @@
 local M = {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.8",
-    enabled = true,
-    cmd = "Telescope",
+    version = "*",
     dependencies = {
-        -- { "kyoh86/telescope-windows.nvim" },
-        { "nvim-lua/popup.nvim" },
-        { "nvim-lua/plenary.nvim" },
+        "nvim-lua/plenary.nvim",
         { "nvim-telescope/telescope-ui-select.nvim" },
+        { "kyoh86/telescope-windows.nvim" },
         { "tsakirist/telescope-lazy.nvim" },
-        { "benfowler/telescope-luasnip.nvim" },
     },
+    init = function()
+        -- Load ui-select immediately so vim.ui.select is replaced
+        -- before LSP code actions or any other vim.ui.select calls fire.
+        require("telescope").load_extension("ui-select")
+    end,
     keys = {
         {
             "<leader>sf",
@@ -165,9 +166,9 @@ M.config = function()
         },
     })
 
-    telescope.load_extension("lazy")
     telescope.load_extension("ui-select")
-    telescope.load_extension('harpoon')
+    telescope.load_extension("lazy")
+    telescope.load_extension("windows")
 end
 
 return M
