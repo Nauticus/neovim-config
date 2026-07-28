@@ -7,20 +7,12 @@ function M.config()
     require("gitsigns").setup({
         sign_priority = 5,
         signs = {
-            add          = { text = '┃' },
-            change       = { text = '┃' },
-            delete       = { text = '╽' },
-            topdelete    = { text = '╿' },
-            changedelete = { text = '┃' },
-            untracked    = { text = '┊' },
-        },
-        signs_staged = {
-            add          = { text = '┃' },
-            change       = { text = '┃' },
-            delete       = { text = '╽' },
-            topdelete    = { text = '╿' },
-            changedelete = { text = '┃' },
-            untracked    = { text = '┊' },
+            add = { text = "┃" },
+            change = { text = "┃" },
+            delete = { text = "╽" },
+            topdelete = { text = "╿" },
+            changedelete = { text = "┃" },
+            untracked = { text = "┊" },
         },
         attach_to_untracked = true,
         current_line_blame = false,
@@ -30,7 +22,7 @@ function M.config()
             delay = 700,
             ignore_whitespace = true,
         },
-        current_line_blame_formatter = '<author>, <author_time:%R> - <summary>',
+        current_line_blame_formatter = "<author>, <author_time:%R> - <summary>",
         on_attach = function(bufnr)
             local gs = package.loaded.gitsigns
 
