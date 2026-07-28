@@ -200,7 +200,7 @@ end
 --- Get the language tree for a buffer
 local function get_parser(bufnr)
     bufnr = bufnr or 0
-    local lang = vim.treesitter.language.get(bufnr)
+    local lang = vim.treesitter.language.get_lang(bufnr)
     if not lang then
         return nil
     end
@@ -281,7 +281,7 @@ end
 --- Get the detected language for a buffer
 local function get_lang(bufnr)
     bufnr = bufnr or 0
-    local lang = vim.treesitter.language.get(bufnr)
+    local lang = vim.treesitter.language.get_lang(bufnr)
     if lang then
         return lang
     end
