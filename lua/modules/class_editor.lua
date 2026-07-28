@@ -15,126 +15,203 @@
 
 local M = {}
 
+-- ── Known class-manipulation function names ─────────────────────────
+
+local CLASS_FUNCS = {
+    clsx = true,
+    twMerge = true,
+    tw = true,
+    cx = true,
+    cva = true,
+    cls = true,
+    tv = true,
+}
+
 -- ── Treesitter queries ──────────────────────────────────────────────
--- Each entry: { query, extractor }
--- The extractor receives (node, bufnr) and returns a ClassLocation or nil.
+-- Each spec has:
+--   query   — captures a parent node as @target, plus child captures as needed
+--   check   — function(target_node, captures_table, bufnr) -> true/false
+--   extract — function(target_node, captures_table, bufnr) -> ClassLocation
 
 local LANG_QUERIES = {
-    -- HTML (and variants: htmldjango, svelte, astro, blade, vue-html)
     html = {
         -- class="value" / class='value'
         {
             query = [[
                 (attribute
-                    (attribute_name) @attr_name
-                    (quoted_attribute_value) @attr_value)
+                    (attribute_name) @name
+                    (quoted_attribute_value) @raw_value) @target
             ]],
-            attr_predicate = function(name_node, _bufnr)
-                local name = vim.treesitter.get_node_text(name_node, _bufnr)
+            check = function(_target, captures, bufnr)
+                local name = vim.treesitter.get_node_text(captures.name[1], bufnr)
                 return name == "class"
             end,
-            value_node = function(_parent, value_node, bufnr)
-                -- attribute_value is a child of quoted_attribute_value
-                for child in value_node:iter_children() do
+            extract = function(_target, captures, bufnr)
+                local raw_node = captures["raw_value"][1]
+                -- Find attribute_value inside quoted_attribute_value
+                local val_node
+                for child in raw_node:iter_children() do
                     if child:type() == "attribute_value" then
-                        return child
+                        val_node = child
+                        break
                     end
                 end
-                -- fallback: use the quoted_attribute_value itself (strip quotes later)
-                return value_node
+                val_node = val_node or raw_node
+                local text = vim.treesitter.get_node_text(val_node, bufnr)
+                local srow, scol, erow, ecol = val_node:range()
+                return {
+                    bufnr = bufnr,
+                    value = strip_quotes(text),
+                    wrapper = "attribute",
+                    value_node = val_node,
+                    value_node_start_row = srow,
+                    value_node_start_col = scol,
+                    value_node_end_row = erow,
+                    value_node_end_col = ecol,
+                }
             end,
-            wrapper = "attribute",
         },
     },
 
-    -- TSX / JSX
     tsx = {
         -- className="value"  (plain string)
         {
             query = [[
                 (jsx_attribute
-                    (property_identifier) @attr_name
-                    (string) @attr_value)
+                    (property_identifier) @name
+                    (string) @raw_value) @target
             ]],
-            attr_predicate = function(name_node, _bufnr)
-                local name = vim.treesitter.get_node_text(name_node, _bufnr)
+            check = function(_target, captures, bufnr)
+                local name = vim.treesitter.get_node_text(captures.name[1], bufnr)
                 return name == "className"
             end,
-            value_node = function(_parent, value_node, bufnr)
-                -- string_fragment is a child of string
-                for child in value_node:iter_children() do
+            extract = function(_target, captures, bufnr)
+                local raw_node = captures["raw_value"][1]
+                -- string_fragment inside string
+                local val_node
+                for child in raw_node:iter_children() do
                     if child:type() == "string_fragment" then
-                        return child
+                        val_node = child
+                        break
                     end
                 end
-                return value_node
+                val_node = val_node or raw_node
+                local text = vim.treesitter.get_node_text(val_node, bufnr)
+                local srow, scol, erow, ecol = val_node:range()
+                return {
+                    bufnr = bufnr,
+                    value = strip_quotes(text),
+                    wrapper = "jsx_string",
+                    value_node = val_node,
+                    value_node_start_row = srow,
+                    value_node_start_col = scol,
+                    value_node_end_row = erow,
+                    value_node_end_col = ecol,
+                }
             end,
-            wrapper = "jsx_string",
         },
+
         -- className={"value"}  (jsx_expression > string)
         {
             query = [[
                 (jsx_attribute
-                    (property_identifier) @attr_name
-                    (jsx_expression (string) @attr_value))
+                    (property_identifier) @name
+                    (jsx_expression (string) @raw_value)) @target
             ]],
-            attr_predicate = function(name_node, _bufnr)
-                local name = vim.treesitter.get_node_text(name_node, _bufnr)
+            check = function(_target, captures, bufnr)
+                local name = vim.treesitter.get_node_text(captures.name[1], bufnr)
                 return name == "className"
             end,
-            value_node = function(_parent, value_node, bufnr)
-                for child in value_node:iter_children() do
+            extract = function(_target, captures, bufnr)
+                local raw_node = captures["raw_value"][1]
+                local val_node
+                for child in raw_node:iter_children() do
                     if child:type() == "string_fragment" then
-                        return child
+                        val_node = child
+                        break
                     end
                 end
-                return value_node
+                val_node = val_node or raw_node
+                local text = vim.treesitter.get_node_text(val_node, bufnr)
+                local srow, scol, erow, ecol = val_node:range()
+                return {
+                    bufnr = bufnr,
+                    value = strip_quotes(text),
+                    wrapper = "jsx_string",
+                    value_node = val_node,
+                    value_node_start_row = srow,
+                    value_node_start_col = scol,
+                    value_node_end_row = erow,
+                    value_node_end_col = ecol,
+                }
             end,
-            wrapper = "jsx_string",
         },
+
         -- className={`template literal`}
         {
             query = [[
                 (jsx_attribute
-                    (property_identifier) @attr_name
-                    (jsx_expression (template_string) @attr_value))
+                    (property_identifier) @name
+                    (jsx_expression (template_string) @raw_value)) @target
             ]],
-            attr_predicate = function(name_node, _bufnr)
-                local name = vim.treesitter.get_node_text(name_node, _bufnr)
+            check = function(_target, captures, bufnr)
+                local name = vim.treesitter.get_node_text(captures.name[1], bufnr)
                 return name == "className"
             end,
-            value_node = function(_parent, value_node, _bufnr)
-                -- Returns the whole template_string; we'll extract string_fragments
-                return value_node
+            extract = function(_target, captures, bufnr)
+                local tmpl_node = captures["raw_value"][1]
+                local fragments = extract_template_fragments(tmpl_node, bufnr)
+                local srow, scol = tmpl_node:start()
+                local erow, ecol = tmpl_node:end_()
+                return {
+                    bufnr = bufnr,
+                    value = table.concat(fragments, " "),
+                    wrapper = "jsx_template",
+                    value_node = tmpl_node,
+                    value_node_start_row = srow,
+                    value_node_start_col = scol,
+                    value_node_end_row = erow,
+                    value_node_end_col = ecol,
+                }
             end,
-            wrapper = "jsx_template",
         },
+
         -- className={clsx(...)} or className={twMerge(...)}
         {
             query = [[
                 (jsx_attribute
-                    (property_identifier) @attr_name
-                    (jsx_expression (call_expression) @call))
+                    (property_identifier) @name
+                    (jsx_expression (call_expression) @call)) @target
             ]],
-            attr_predicate = function(name_node, _bufnr)
-                local name = vim.treesitter.get_node_text(name_node, _bufnr)
-                return name == "className"
-            end,
-            call_predicate = function(call_node, bufnr)
+            check = function(_target, captures, bufnr)
+                local name = vim.treesitter.get_node_text(captures.name[1], bufnr)
+                if name ~= "className" then
+                    return false
+                end
+                local call_node = captures.call[1]
                 local ident = call_node:named_child(0)
                 if not ident then
                     return false
                 end
-                local name = vim.treesitter.get_node_text(ident, bufnr)
-                return name == "clsx"
-                    or name == "twMerge"
-                    or name == "tw"
-                    or name == "cx"
-                    or name == "cva"
-                    or name == "cls"
-                    or name == "tv"
+                local fname = vim.treesitter.get_node_text(ident, bufnr)
+                return CLASS_FUNCS[fname] == true
             end,
-            wrapper = "jsx_call",
+            extract = function(_target, captures, bufnr)
+                local call_node = captures.call[1]
+                local classes = extract_call_args(call_node, bufnr)
+                local srow, scol = call_node:start()
+                local erow, ecol = call_node:end_()
+                return {
+                    bufnr = bufnr,
+                    value = table.concat(classes, " "),
+                    wrapper = "jsx_call",
+                    call_node = call_node,
+                    value_node_start_row = srow,
+                    value_node_start_col = scol,
+                    value_node_end_row = erow,
+                    value_node_end_col = ecol,
+                }
+            end,
         },
     },
 
@@ -143,28 +220,29 @@ local LANG_QUERIES = {
         {
             query = [[
                 (call_expression
-                    (identifier) @fn_name
-                    (arguments) @args)
+                    (identifier) @fn
+                    (arguments) @args) @target
             ]],
-            call_predicate = function(call_node, bufnr)
-                local ident = call_node:named_child(0)
-                if not ident then
-                    return false
-                end
-                local name = vim.treesitter.get_node_text(ident, bufnr)
-                return name == "clsx"
-                    or name == "twMerge"
-                    or name == "tw"
-                    or name == "cx"
-                    or name == "cva"
-                    or name == "cls"
-                    or name == "tv"
+            check = function(_target, captures, bufnr)
+                local fname = vim.treesitter.get_node_text(captures.fn[1], bufnr)
+                return CLASS_FUNCS[fname] == true
             end,
-            wrapper = "js_call",
+            extract = function(target, _captures, bufnr)
+                local classes = extract_call_args(target, bufnr)
+                local srow, scol = target:start()
+                local erow, ecol = target:end_()
+                return {
+                    bufnr = bufnr,
+                    value = table.concat(classes, " "),
+                    wrapper = "js_call",
+                    call_node = target,
+                    value_node_start_row = srow,
+                    value_node_start_col = scol,
+                    value_node_end_row = erow,
+                    value_node_end_col = ecol,
+                }
+            end,
         },
-    },
-    typescript = {
-        -- reuse javascript queries (same AST shape)
     },
 
     -- CSS / SCSS — @apply
@@ -173,44 +251,65 @@ local LANG_QUERIES = {
             query = [[
                 (postcss_statement
                     (at_keyword) @kw
-                    (plain_value) @value)
+                    (plain_value) @value) @target
             ]],
-            kw_predicate = function(kw_node, bufnr)
-                local text = vim.treesitter.get_node_text(kw_node, bufnr)
-                return text == "@apply"
+            check = function(_target, captures, bufnr)
+                local kw = vim.treesitter.get_node_text(captures.kw[1], bufnr)
+                return kw == "@apply"
             end,
-            wrapper = "css_apply",
+            extract = function(_target, captures, bufnr)
+                local value_nodes = captures.value
+                if not value_nodes or #value_nodes == 0 then
+                    return nil
+                end
+                local classes = {}
+                for _, vn in ipairs(value_nodes) do
+                    local text = vim.treesitter.get_node_text(vn, bufnr)
+                    for word in text:gmatch("%S+") do
+                        table.insert(classes, word)
+                    end
+                end
+                local first_row, first_col = value_nodes[1]:start()
+                local last_node = value_nodes[#value_nodes]
+                local last_row, last_col = last_node:end_()
+                return {
+                    bufnr = bufnr,
+                    value = table.concat(classes, " "),
+                    wrapper = "css_apply",
+                    value_node_start_row = first_row,
+                    value_node_start_col = first_col,
+                    value_node_end_row = last_row,
+                    value_node_end_col = last_col,
+                }
+            end,
         },
-    },
-    scss = {
-        -- same as css
     },
 }
 
--- Share javascript queries for typescript
-if LANG_QUERIES.typescript then
-    LANG_QUERIES.typescript = LANG_QUERIES.javascript
-end
-if LANG_QUERIES.scss then
-    LANG_QUERIES.scss = LANG_QUERIES.css
-end
+-- Share javascript queries for typescript; css for scss
+LANG_QUERIES.typescript = LANG_QUERIES.javascript
+LANG_QUERIES.scss = LANG_QUERIES.css
 
 -- ── Helpers ─────────────────────────────────────────────────────────
 
---- Get the language tree for a buffer
-local function get_parser(bufnr)
-    bufnr = bufnr or 0
-    local ft = vim.bo[bufnr].filetype
-    local lang = vim.treesitter.language.get_lang(ft)
-    if not lang then
-        return nil
+--- Strip surrounding quotes from text
+local function strip_quotes(text)
+    if #text >= 2 then
+        local first = text:sub(1, 1)
+        local last = text:sub(#text, #text)
+        if
+            (first == '"' and last == '"')
+            or (first == "'" and last == "'")
+            or (first == "`" and last == "`")
+        then
+            return text:sub(2, #text - 1)
+        end
     end
-    return vim.treesitter.get_parser(bufnr, lang)
+    return text
 end
 
 --- Check if a node contains a given cursor position (lnum, col — both 0-indexed)
-local function node_contains(node, lnum, col, bufnr)
-    bufnr = bufnr or 0
+local function node_contains(node, lnum, col)
     local srow, scol, erow, ecol = node:range()
     return lnum >= srow
         and lnum <= erow
@@ -262,27 +361,13 @@ local function extract_call_args(call_node, bufnr)
     return classes
 end
 
---- Strip surrounding quotes from text
-local function strip_quotes(text)
-    local stripped = text
-    if #stripped >= 2 then
-        local first = stripped:sub(1, 1)
-        local last = stripped:sub(#stripped, #stripped)
-        if
-            (first == '"' and last == '"')
-            or (first == "'" and last == "'")
-            or (first == "`" and last == "`")
-        then
-            stripped = stripped:sub(2, #stripped - 1)
-        end
-    end
-    return stripped
-end
-
---- Get the detected language for a buffer
+--- Get the detected treesitter language for a buffer
 local function get_lang(bufnr)
     bufnr = bufnr or 0
     local ft = vim.bo[bufnr].filetype
+    if not ft or ft == "" then
+        return nil
+    end
     local lang = vim.treesitter.language.get_lang(ft)
     if lang then
         return lang
@@ -295,33 +380,22 @@ local function get_lang(bufnr)
         ejs = "html",
         htmldjango = "html",
         blade = "html",
-        javascriptreact = "tsx",
-        typescriptreact = "tsx",
-        jsx = "tsx",
     }
     return ft_to_lang[ft] or nil
 end
 
+--- Get the treesitter parser for a buffer
+local function get_parser(bufnr)
+    bufnr = bufnr or 0
+    local lang = get_lang(bufnr)
+    if not lang then
+        return nil
+    end
+    return vim.treesitter.get_parser(bufnr, lang)
+end
+
 -- ── Main extraction ─────────────────────────────────────────────────
 
---- ClassLocation describes where the classes live and how to modify them.
---- {
----   bufnr,
----   value       — the full class string (e.g. "bg-red-500 text-white"),
----   text        — original raw text of the value node(s),
----   wrapper     — type string identifying the context,
----   lines_start, lines_end  — buf lines affected (0-indexed, inclusive end for multi-line),
----   lines       — original buffer lines in the range,
----   -- For attribute value replacement:
----   value_node_start_row, value_node_start_col,
----   value_node_end_row, value_node_end_col,
----   -- For @apply: list of plain_value nodes
----   apply_nodes,
----   -- For call args:
----   call_node,
----   -- For template strings:
----   template_node,
---- }
 function M.extract(bufnr)
     bufnr = bufnr or 0
     local cursor = vim.api.nvim_win_get_cursor(0)
@@ -352,117 +426,38 @@ function M.extract(bufnr)
     -- For each query pattern
     for _, spec in ipairs(queries) do
         local q = vim.treesitter.query.parse(lang, spec.query)
-        for id, node, _metadata in q:iter_captures(root, bufnr, 0, -1) do
-            local capture_name = q.captures[id]
 
-            -- Check if the node is under or near the cursor
-            if not node_contains(node, lnum, col, bufnr) then
+        -- Group captures by match so we have all captures for each target
+        for match in q:iter_matches(root, bufnr, 0, -1) do
+            -- Build captures table: { name = {node}, raw_value = {node}, target = {node}, ... }
+            local captures = {}
+            for id, node in pairs(match) do
+                local name = q.captures[id]
+                if not captures[name] then
+                    captures[name] = {}
+                end
+                captures[name][#captures[name] + 1] = node
+            end
+
+            local target_node = captures.target[1]
+            if not target_node then
                 goto continue
             end
 
-            if capture_name == "attr_name" and spec.attr_predicate then
-                -- Validate the attribute name
-                if not spec.attr_predicate(node, bufnr) then
-                    goto continue
-                end
-                -- Find the sibling value node (same parent)
-                local parent = node:parent()
-                if not parent then
-                    goto continue
-                end
-
-                -- Find the matching value capture in the same parent
-                for child in parent:iter_children() do
-                    -- Check if this child matched as attr_value
-                    local child_row, child_col = child:start()
-                    -- We need to check if the cursor is in the attribute region
-                    if node_contains(parent, lnum, col, bufnr) then
-                        if spec.value_node then
-                            -- Find the quoted_attribute_value or string child
-                            for sibling in parent:iter_children() do
-                                local sib_type = sibling:type()
-                                if sib_type == "quoted_attribute_value" or sib_type == "string" then
-                                    local val_node = spec.value_node(parent, sibling, bufnr)
-                                    if val_node then
-                                        local text = vim.treesitter.get_node_text(val_node, bufnr)
-                                        local srow, scol, erow, ecol = val_node:range()
-                                        return {
-                                            bufnr = bufnr,
-                                            value = strip_quotes(text),
-                                            wrapper = spec.wrapper or "attribute",
-                                            value_node = val_node,
-                                            value_node_start_row = srow,
-                                            value_node_start_col = scol,
-                                            value_node_end_row = erow,
-                                            value_node_end_col = ecol,
-                                            call_node = nil,
-                                        }
-                                    end
-                                end
-                            end
-                        end
-                        break
-                    end
-                end
+            -- Check if the target node contains the cursor
+            if not node_contains(target_node, lnum, col) then
+                goto continue
             end
 
-            if capture_name == "kw" and spec.kw_predicate then
-                -- @apply directive
-                if spec.kw_predicate(node, bufnr) then
-                    local parent = node:parent()
-                    if not parent then
-                        goto continue
-                    end
-                    local apply_nodes = {}
-                    for child in parent:iter_children() do
-                        if child:type() == "plain_value" then
-                            table.insert(apply_nodes, child)
-                        end
-                    end
-                    if #apply_nodes == 0 then
-                        goto continue
-                    end
-
-                    local classes = {}
-                    for _, anode in ipairs(apply_nodes) do
-                        local text = vim.treesitter.get_node_text(anode, bufnr)
-                        for word in text:gmatch("%S+") do
-                            table.insert(classes, word)
-                        end
-                    end
-                    local first_row, first_col = apply_nodes[1]:start()
-                    local last_node = apply_nodes[#apply_nodes]
-                    local last_row, last_col = last_node:end_()
-
-                    return {
-                        bufnr = bufnr,
-                        value = table.concat(classes, " "),
-                        wrapper = "css_apply",
-                        apply_nodes = apply_nodes,
-                        value_node_start_row = first_row,
-                        value_node_start_col = first_col,
-                        value_node_end_row = last_row,
-                        value_node_end_col = last_col,
-                    }
-                end
+            -- Validate with spec.check
+            if not spec.check(target_node, captures, bufnr) then
+                goto continue
             end
 
-            if capture_name == "call" and spec.call_predicate then
-                if spec.call_predicate(node, bufnr) then
-                    local classes = extract_call_args(node, bufnr)
-                    local srow, scol = node:start()
-                    local erow, ecol = node:end_()
-                    return {
-                        bufnr = bufnr,
-                        value = table.concat(classes, " "),
-                        wrapper = spec.wrapper or "js_call",
-                        call_node = node,
-                        value_node_start_row = srow,
-                        value_node_start_col = scol,
-                        value_node_end_row = erow,
-                        value_node_end_col = ecol,
-                    }
-                end
+            -- Extract
+            local result = spec.extract(target_node, captures, bufnr)
+            if result then
+                return result
             end
 
             ::continue::
@@ -502,49 +497,35 @@ function M:save(location)
     local new_value = M.join_classes(lines)
 
     if location.wrapper == "css_apply" then
-        -- Replace each plain_value node's text, keeping one class per node
-        -- For simplicity: replace all plain_values with the new classes
-        -- and add/remove nodes as needed. Since TS nodes aren't editable,
-        -- we replace the text in the buffer.
+        -- Replace the text span covering all plain_value nodes
         local first_row = location.value_node_start_row
         local first_col = location.value_node_start_col
         local last_row = location.value_node_end_row
         local last_col = location.value_node_end_col
 
+        local buf_lines = vim.api.nvim_buf_get_lines(location.bufnr, first_row, last_row + 1, false)
+        local first_line = buf_lines[1]
+        local last_line = buf_lines[#buf_lines]
+        local before = first_line:sub(1, first_col)
+        local after = last_line:sub(last_col + 1)
+
         if first_row == last_row then
-            local buf_lines =
-                vim.api.nvim_buf_get_lines(location.bufnr, first_row, first_row + 1, false)
-            local line = buf_lines[1]
-            local before = line:sub(1, first_col)
-            local after = line:sub(last_col + 1)
-            local new_line = before .. new_value .. after
             vim.api.nvim_buf_set_lines(
                 location.bufnr,
                 first_row,
                 first_row + 1,
                 false,
-                { new_line }
+                { before .. new_value .. after }
             )
         else
-            -- Multi-line @apply (rare but possible)
-            local buf_lines =
-                vim.api.nvim_buf_get_lines(location.bufnr, first_row, last_row + 1, false)
-            local first_line = buf_lines[1]
-            local last_line = buf_lines[#buf_lines]
-            local before = first_line:sub(1, first_col)
-            local after = last_line:sub(last_col + 1)
-
-            -- Collect middle lines
             local middle = {}
             for i = 2, #buf_lines - 1 do
                 table.insert(middle, buf_lines[i])
             end
-
             local new_lines = { before .. new_value .. after }
             for _, m in ipairs(middle) do
                 table.insert(new_lines, m)
             end
-            -- Remove extra lines
             vim.api.nvim_buf_set_lines(location.bufnr, first_row, last_row + 1, false, new_lines)
         end
     elseif location.call_node then
@@ -554,48 +535,39 @@ function M:save(location)
         local last_row = location.value_node_end_row
         local last_col = location.value_node_end_col
 
-        -- Rebuild the call: fn_name(classes, ...)
         local call_text = vim.treesitter.get_node_text(location.call_node, location.bufnr)
         local fn_name = call_text:match("(%S+)%(.*")
 
-        if first_row == last_row then
-            local buf_lines =
-                vim.api.nvim_buf_get_lines(location.bufnr, first_row, first_row + 1, false)
-            local line = buf_lines[1]
-            local before = line:sub(1, first_col)
-            local after = line:sub(last_col + 1)
+        local classes = M.split_classes(new_value)
+        local args = {}
+        for _, c in ipairs(classes) do
+            table.insert(args, "'" .. c .. "'")
+        end
+        local new_call = fn_name .. "(" .. table.concat(args, ", ") .. ")"
 
-            -- Rebuild call with new classes as string args
-            local classes = M.split_classes(new_value)
-            local args = {}
-            for _, c in ipairs(classes) do
-                table.insert(args, "'" .. c .. "'")
-            end
-            local new_call = fn_name .. "(" .. table.concat(args, ", ") .. ")"
-            local new_line = before .. new_call .. after
+        local buf_lines = vim.api.nvim_buf_get_lines(location.bufnr, first_row, last_row + 1, false)
+        local first_line = buf_lines[1]
+        local last_line = buf_lines[#buf_lines]
+        local before = first_line:sub(1, first_col)
+        local after = last_line:sub(last_col + 1)
+
+        if first_row == last_row then
             vim.api.nvim_buf_set_lines(
                 location.bufnr,
                 first_row,
                 first_row + 1,
                 false,
-                { new_line }
+                { before .. new_call .. after }
             )
         else
-            -- Multi-line call — just replace the whole region
-            local buf_lines =
-                vim.api.nvim_buf_get_lines(location.bufnr, first_row, last_row + 1, false)
-            local first_line = buf_lines[1]
-            local last_line = buf_lines[#buf_lines]
-            local before = first_line:sub(1, first_col)
-            local after = last_line:sub(last_col + 1)
-
-            local classes = M.split_classes(new_value)
-            local args = {}
-            for _, c in ipairs(classes) do
-                table.insert(args, "'" .. c .. "'")
+            local middle = {}
+            for i = 2, #buf_lines - 1 do
+                table.insert(middle, buf_lines[i])
             end
-            local new_call = fn_name .. "(" .. table.concat(args, ", ") .. ")"
             local new_lines = { before .. new_call .. after }
+            for _, m in ipairs(middle) do
+                table.insert(new_lines, m)
+            end
             vim.api.nvim_buf_set_lines(location.bufnr, first_row, last_row + 1, false, new_lines)
         end
     else
@@ -605,29 +577,21 @@ function M:save(location)
         local last_row = location.value_node_end_row
         local last_col = location.value_node_end_col
 
+        local buf_lines = vim.api.nvim_buf_get_lines(location.bufnr, first_row, last_row + 1, false)
+        local first_line = buf_lines[1]
+        local last_line = buf_lines[#buf_lines]
+        local before = first_line:sub(1, first_col)
+        local after = last_line:sub(last_col + 1)
+
         if first_row == last_row then
-            local buf_lines =
-                vim.api.nvim_buf_get_lines(location.bufnr, first_row, first_row + 1, false)
-            local line = buf_lines[1]
-            local before = line:sub(1, first_col)
-            local after = line:sub(last_col + 1)
-            local new_line = before .. new_value .. after
             vim.api.nvim_buf_set_lines(
                 location.bufnr,
                 first_row,
                 first_row + 1,
                 false,
-                { new_line }
+                { before .. new_value .. after }
             )
         else
-            -- Multi-line value (template literals etc.)
-            local buf_lines =
-                vim.api.nvim_buf_get_lines(location.bufnr, first_row, last_row + 1, false)
-            local first_line = buf_lines[1]
-            local last_line = buf_lines[#buf_lines]
-            local before = first_line:sub(1, first_col)
-            local after = last_line:sub(last_col + 1)
-
             local new_lines = { before .. new_value .. after }
             vim.api.nvim_buf_set_lines(location.bufnr, first_row, last_row + 1, false, new_lines)
         end
