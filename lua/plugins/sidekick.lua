@@ -6,6 +6,19 @@ return {
         signs = {
             enabled = true,
         },
+        cli = {
+            tools = {
+                copilot_local = {
+                    cmd = { "copilot-local", "--banner" },
+                    is_proc = function(_, proc)
+                        return proc.cmd:find("copilot%-local") and not proc.cmd:find("language%-server") or false
+                    end,
+                    url = "https://github.com/github/copilot-cli",
+                    resume = { "--resume" },
+                    continue = { "--continue" },
+                },
+            },
+        },
     },
     keys = {
         {
