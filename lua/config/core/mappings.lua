@@ -59,12 +59,22 @@ keymap.set("n", [[\ow]], function()
     toggle_opt("wrap")
 end, { desc = "Toggle 'wrap'" })
 
--- Paste above/below
+-- Paste above/below (linewise paste from current register)
+local function paste_linewise(after_cursor)
+    local reg = vim.v.register
+    local text = vim.fn.getreg(reg)
+    if text == "" then
+        return
+    end
+    local lines = vim.split(text, "\n", { plain = true })
+    vim.api.nvim_put(lines, "l", after_cursor, false)
+end
+
 keymap.set({ "n", "x" }, "[p", function()
-    vim.fn.put("!", vim.v.register)
+    paste_linewise(false)
 end, { desc = "Paste Above" })
 keymap.set({ "n", "x" }, "]p", function()
-    vim.fn.put("", vim.v.register)
+    paste_linewise(true)
 end, { desc = "Paste Below" })
 
 -- Go to definition in a vertical split
