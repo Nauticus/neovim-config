@@ -8,7 +8,7 @@ return {
         },
         cli = {
             tools = {
-                copilot = {
+                copilot_local = {
                     cmd = { "copilot", "--banner" },
                     env = {
                         COPILOT_PROVIDER_BASE_URL = "http://192.168.50.144:8091/v1",
