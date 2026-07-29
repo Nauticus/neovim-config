@@ -44,17 +44,12 @@ return {
             end,
             desc = "Toggle Flash Search",
         },
-        -- Treesitter incremental selection (grow/shrink)
+        -- Treesitter incremental selection (grow/shrink with ; and ,)
         {
             "]r",
             mode = { "n", "x", "o" },
             function()
-                require("flash").treesitter({
-                    actions = {
-                        ["]r"] = "next", -- grow selection
-                        ["[r"] = "prev", -- shrink selection
-                    },
-                })
+                require("flash").treesitter()
             end,
             desc = "Treesitter Incremental Selection",
         },
