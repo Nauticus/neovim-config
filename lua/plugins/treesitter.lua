@@ -78,11 +78,11 @@ end
 
 function M.setup_repeat_keys()
     local repeat_move = require("nvim-treesitter-textobjects.repeatable_move")
-    vim.keymap.set({ "n", "x", "o" }, ";", repeat_move.repeat_last_move_next, {
-        desc = "Repeat move forward",
+    vim.keymap.set({ "n", "x", "o" }, ">m", repeat_move.repeat_last_move_next, {
+        desc = "Repeat TS move forward",
     })
-    vim.keymap.set({ "n", "x", "o" }, ",", repeat_move.repeat_last_move_previous, {
-        desc = "Repeat move backward",
+    vim.keymap.set({ "n", "x", "o" }, "<m", repeat_move.repeat_last_move_previous, {
+        desc = "Repeat TS move backward",
     })
 end
 
