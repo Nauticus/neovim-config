@@ -49,5 +49,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 vim.lsp.buf.clear_references()
             end,
         })
+
+        -- Constrain hover float width
+        vim.keymap.set("n", "K", function()
+            vim.lsp.buf.hover({ max_width = 80, max_height = 20 })
+        end, { buffer = bufnr, desc = "LSP hover (constrained)" })
     end,
 })
