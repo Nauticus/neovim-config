@@ -49,7 +49,13 @@ return {
             "]r",
             mode = { "n", "x", "o" },
             function()
-                require("flash").treesitter()
+                require("flash").treesitter({
+                    labeler = function(matches) ---@param matches Flash.Match[]
+                        for _, m in ipairs(matches) do
+                            m.label = false ---@diagnostic disable-line: inject-field
+                        end
+                    end,
+                })
             end,
             desc = "Treesitter Incremental Selection",
         },
