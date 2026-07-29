@@ -8,10 +8,17 @@ return {
         },
         cli = {
             tools = {
-                copilot_local = {
-                    cmd = { "copilot-local", "--banner" },
+                copilot = {
+                    cmd = { "copilot", "--banner" },
+                    env = {
+                        COPILOT_PROVIDER_BASE_URL = "http://192.168.50.144:8091/v1",
+                        COPILOT_MODEL = "qwen3.6-27b-mtp",
+                        COPILOT_OFFLINE = "true",
+                        COPILOT_PROVIDER_MAX_PROMPT_TOKENS = "131072",
+                        COPILOT_PROVIDER_MAX_OUTPUT_TOKENS = "32768",
+                    },
                     is_proc = function(_, proc)
-                        return proc.cmd:find("copilot%-local") and not proc.cmd:find("language%-server") or false
+                        return proc.cmd:find("copilot") and not proc.cmd:find("language%-server") or false
                     end,
                     url = "https://github.com/github/copilot-cli",
                     resume = { "--resume" },
